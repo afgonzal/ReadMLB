@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29009.5
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadMLB.Web.API", "ReadMLB.Web.API\ReadMLB.Web.API.csproj", "{389EA515-8C36-479B-A16C-7E27296CB3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadMLB.Web.API", "ReadMLB.Web.API\ReadMLB.Web.API.csproj", "{389EA515-8C36-479B-A16C-7E27296CB3D5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadMLB2020", "ReadMLB2020\ReadMLB2020.csproj", "{295EC738-200F-447D-BA4B-18CE987FE82A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadMLB.Entities", "ReadMLB.Entities\ReadMLB.Entities.csproj", "{CFDF48A2-1458-422E-8B68-5E747120DAF8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadMLB.DataLayer", "ReadMLB.DataLayer\ReadMLB.DataLayer.csproj", "{B07BE50B-6AFF-4237-BD36-10CC18EA6ED1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadMLB.Services", "ReadMLB.Services\ReadMLB.Services.csproj", "{56CD045C-0FC8-4C5F-80C2-D67C1B772D91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +23,22 @@ Global
 		{389EA515-8C36-479B-A16C-7E27296CB3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{389EA515-8C36-479B-A16C-7E27296CB3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{389EA515-8C36-479B-A16C-7E27296CB3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{295EC738-200F-447D-BA4B-18CE987FE82A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{295EC738-200F-447D-BA4B-18CE987FE82A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{295EC738-200F-447D-BA4B-18CE987FE82A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{295EC738-200F-447D-BA4B-18CE987FE82A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFDF48A2-1458-422E-8B68-5E747120DAF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFDF48A2-1458-422E-8B68-5E747120DAF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFDF48A2-1458-422E-8B68-5E747120DAF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFDF48A2-1458-422E-8B68-5E747120DAF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07BE50B-6AFF-4237-BD36-10CC18EA6ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07BE50B-6AFF-4237-BD36-10CC18EA6ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07BE50B-6AFF-4237-BD36-10CC18EA6ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07BE50B-6AFF-4237-BD36-10CC18EA6ED1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56CD045C-0FC8-4C5F-80C2-D67C1B772D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56CD045C-0FC8-4C5F-80C2-D67C1B772D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56CD045C-0FC8-4C5F-80C2-D67C1B772D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56CD045C-0FC8-4C5F-80C2-D67C1B772D91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
