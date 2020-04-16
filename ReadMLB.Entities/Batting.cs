@@ -7,9 +7,11 @@ namespace ReadMLB.Entities
     {
         public long BattingId { get; set; }
         public long PlayerId { get; set; }
+        public Player Player { get; set; }
         public short Year { get; set; }
         public byte League { get; set; }
-        public short TeamId { get; set; }
+        public byte TeamId { get; set; }
+        public Team Team { get; set; }
         public bool InPO { get; set; }
         public BattingVs BattingVs{ get;set; }
         public short G { get; set; }
@@ -55,7 +57,7 @@ namespace ReadMLB.Entities
         {
             get
             {
-                return (short)(H2B+H3B+HR);
+                return (short)(H2B + H3B + HR);
             }
             protected set { }
         }
@@ -63,7 +65,7 @@ namespace ReadMLB.Entities
         {
             get
             {
-                return SO>0 ? (float)Math.Round((float)BB/(float)SO,3) : 0;
+                return SO > 0 ? (float)Math.Round((float)BB / (float)SO, 3) : 0;
             }
             protected set { }
         }
@@ -72,7 +74,7 @@ namespace ReadMLB.Entities
         {
             get
             {
-                return AB>0 ? (float)Math.Round((float)H/(float)AB,3) : 0;
+                return AB > 0 ? (float)Math.Round((float)H / (float)AB, 3) : 0;
             }
             protected set { }
         }

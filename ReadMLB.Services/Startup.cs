@@ -1,8 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ReadMLB.DataLayer.Context;
-using ReadMLB.DataLayer.Repositories;
 
 namespace ReadMLB.Services
 {
@@ -10,12 +7,11 @@ namespace ReadMLB.Services
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<FranchiseContext>(options => options.UseSqlServer(config.GetConnectionString("Franchise")), ServiceLifetime.Transient);
+            DataLayer.Startup.ConfigureServices(services, config);
             services.AddScoped<ITeamsService, TeamsService>();
             services.AddScoped<IPlayersService, PlayersService>();
             services.AddScoped<IBattingService, BattingService>();
 
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
     }
 }

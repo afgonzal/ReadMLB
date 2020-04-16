@@ -42,7 +42,7 @@ namespace ReadMLB2020
                     stats.Add(new Batting
                     {
                         PlayerId = Convert.ToInt64(attrs[1]),
-                        TeamId = (attrs[4] == "-1") ? (byte)100 : Convert.ToInt16(attrs[4]),
+                        TeamId = (attrs[4] == "-1") ? (byte)100 : Convert.ToByte(attrs[4]),
                         League = Convert.ToByte(attrs[5]),
                         G = Convert.ToInt16(attrs[6]),
                         BattingVs = BattingVs.Total,

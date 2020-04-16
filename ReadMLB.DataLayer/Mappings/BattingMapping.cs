@@ -19,7 +19,15 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.H2B).HasColumnName("2B");
             builder.Property(e => e.H3B).HasColumnName("3B");
             builder.Property(e => e.PA).HasColumnName("TPA");
-
+            builder.Property(e => e.BattingVs).HasConversion(v => (byte)v, v => (BattingVs)v);
+            builder.Property(e => e.BBK).HasColumnType("decimal(4,3)");
+            builder.Property(e => e.BA).HasColumnType("decimal(4,3)");
+            builder.Property(e => e.SLG).HasColumnType("decimal(4,3)");
+            builder.Property(e => e.OBP).HasColumnType("decimal(4,3)");
+            builder.Property(e => e.OPS).HasColumnType("decimal(4,3)");
+            builder.Property(e => e.ABHR).HasColumnType("decimal(8,3)");
+            builder.HasOne(e => e.Team);
+            builder.HasOne(e => e.Player);
         }
     }
 

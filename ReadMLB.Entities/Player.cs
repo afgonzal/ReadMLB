@@ -10,6 +10,6 @@ namespace ReadMLB.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
-        public ICollection<Batting> BattingStats { get; set; }
+        //public ICollection<Batting> BattingStats { get; set; }
     }
 }

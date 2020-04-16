@@ -63,6 +63,18 @@ namespace ReadMLB.DataLayer.Repositories
             return await findResult.ToListAsync();
         }
 
+        public async Task<IEnumerable<TEntity>> FindAsync<TInc,TKey>(Expression<Func<TEntity,TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
+        {
+            var findResult = Context.Set<TEntity>().Include(include).Where(predicate);
+            if (orderBy != null)
+                findResult = findResult.OrderBy(orderBy);
+            if (take.HasValue)
+                findResult = findResult.Take(take.Value);
+            if (skip.HasValue)
+                findResult = findResult.Skip(skip.Value);
+            return await findResult.ToListAsync();
+        }
+
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
