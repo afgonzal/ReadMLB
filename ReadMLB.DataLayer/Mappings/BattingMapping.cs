@@ -26,7 +26,7 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.OBP).HasColumnType("decimal(4,3)");
             builder.Property(e => e.OPS).HasColumnType("decimal(4,3)");
             builder.Property(e => e.ABHR).HasColumnType("decimal(8,3)");
-            builder.HasOne(e => e.Team);
+            builder.HasOne(e => e.Team).WithMany().HasForeignKey(e => e.TeamId);
             builder.HasOne(e => e.Player);
         }
     }

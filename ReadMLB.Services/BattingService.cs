@@ -1,9 +1,7 @@
-﻿
-using ReadMLB.DataLayer.Repositories;
+﻿using ReadMLB.DataLayer.Repositories;
 using ReadMLB.Entities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -45,7 +43,7 @@ namespace ReadMLB.Services
 
         public async Task<ICollection<Batting>> GetTeamBattersAsync(short year, short teamId)
         {
-            var batters = await _unitOfWork.BattingStats.FindAsync(b => b.Player, b => b.Year == year && b.TeamId == teamId, b => b.PlayerId);
+            var batters = await _unitOfWork.BattingStats.FindAsync(new List<string> { "Player", "Team.Organization" }, b => b.Year == year && b.TeamId == teamId, b => b.PlayerId);
             return batters.ToList();
         }
 

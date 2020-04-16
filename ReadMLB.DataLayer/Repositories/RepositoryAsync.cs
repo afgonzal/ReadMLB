@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using ReadMLB.DataLayer.Helper;
 
 namespace ReadMLB.DataLayer.Repositories
 {
@@ -48,12 +49,12 @@ namespace ReadMLB.DataLayer.Repositories
 
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await Context.Set<TEntity>().Where(predicate).ToListAsync();
+            return await Context.Set<TEntity>().AsNoTracking().Where(predicate).ToListAsync();
         }
 
         public async Task<IEnumerable<TEntity>> FindAsync<TKey>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
         {
-            var findResult = Context.Set<TEntity>().Where(predicate);
+            var findResult = Context.Set<TEntity>().AsNoTracking().Where(predicate);
             if (orderBy != null)
                 findResult = findResult.OrderBy(orderBy);
             if (take.HasValue)
@@ -65,7 +66,29 @@ namespace ReadMLB.DataLayer.Repositories
 
         public async Task<IEnumerable<TEntity>> FindAsync<TInc,TKey>(Expression<Func<TEntity,TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
         {
-            var findResult = Context.Set<TEntity>().Include(include).Where(predicate);
+            var findResult = Context.Set<TEntity>().AsNoTracking().Include(include).Where(predicate);
+            if (orderBy != null)
+                findResult = findResult.OrderBy(orderBy);
+            if (take.HasValue)
+                findResult = findResult.Take(take.Value);
+            if (skip.HasValue)
+                findResult = findResult.Skip(skip.Value);
+            return await findResult.ToListAsync();
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAsync<TKey>(IEnumerable<string> includes, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
+        {
+            var findResult = Context.Set<TEntity>().AsNoTracking();
+            if (includes.Any())
+            {
+                //findResult = findResult.Include(includes.First()).;
+                foreach (var include in includes)
+                {
+                    findResult = findResult.Include(include);
+                }
+            }
+            
+            findResult = findResult.Where(predicate);
             if (orderBy != null)
                 findResult = findResult.OrderBy(orderBy);
             if (take.HasValue)

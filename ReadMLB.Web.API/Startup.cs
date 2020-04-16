@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,7 @@ namespace ReadMLB.Web.API
             var config = LoadConfiguration();
             services.AddRazorPages();
             Services.Startup.ConfigureServices(services, config);
+            services.AddAutoMapper(typeof(Startup));
             services.AddControllers();
         }
 
