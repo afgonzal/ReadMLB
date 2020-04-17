@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using ReadMLB.Services;
 using System.Threading.Tasks;
 using System.Threading;
@@ -14,8 +15,9 @@ namespace ReadMLB2020
         private readonly IBattingService _battingService;
         private readonly IPitchingService _pitchingService;
         private readonly bool _updateFiles;
+        private readonly FindPlayer _findPlayer;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer)
         {
             _configuration = configuration;
             _teamsService = teamsService;
@@ -23,6 +25,7 @@ namespace ReadMLB2020
             _battingService = battingService;
             _pitchingService = pitchingService;
             _updateFiles = Convert.ToBoolean(_configuration["UpdateFiles"]);
+            _findPlayer = findPlayer;
         }
         public async Task RunAsync(string[] args)
         {
@@ -70,7 +73,7 @@ namespace ReadMLB2020
                 updateBatting = Task.CompletedTask;
             }
 
-            var rpitch = new ReadPitching(_pitchingService, _configuration, year);
+            var rpitch = new ReadPitching(_pitchingService, _findPlayer, _configuration, year);
             if (_updateFiles)
                 rpitch.ParsePitching();
             Task updatePitching;

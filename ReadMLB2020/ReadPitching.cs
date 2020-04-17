@@ -12,20 +12,22 @@ namespace ReadMLB2020
     public class ReadPitching
     {
         private readonly IPitchingService _pitchingService;
-        private short _year;
-        private readonly bool _inPO;
+        private readonly short _year;
+        private readonly bool _inPo;
         private readonly string _pitchingSource;
         private readonly string _pitchingTemp;
         private readonly string _pitchingStats;
+        private FindPlayer _findPlayerHelper;
 
-        public ReadPitching(IPitchingService pitchingService, IConfiguration config, short year)
+        public ReadPitching(IPitchingService pitchingService, FindPlayer findPlayer, IConfiguration config, short year)
         {
             _pitchingService = pitchingService;
             _year = year;
-            _inPO = false;
+            _inPo = false;
             _pitchingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
             _pitchingStats = Path.Combine(config["SourceFolder"], config["PitchingStats"]);
+            _findPlayerHelper = findPlayer;
         }
 
         internal void ParsePitching()
@@ -64,7 +66,7 @@ namespace ReadMLB2020
                         H = Convert.ToInt16(attrs[17]),
                         HR = Convert.ToInt16(attrs[18]),
 
-                        InPO = _inPO,
+                        InPO = _inPo,
                         Year = _year
                     }); ;
                 }
@@ -73,7 +75,8 @@ namespace ReadMLB2020
             return stats;
         }
 
-        internal async Task UpdatePitchingStatsAsync(IEnumerable<Player> players)
+
+        internal async Task UpdatePitchingStatsAsync(IList<Player> players)
         {
             Console.WriteLine("Update Pitching stats.");
             await _pitchingService.CleanYearAsync(_year);
@@ -83,41 +86,44 @@ namespace ReadMLB2020
             using (var file = new StreamReader(_pitchingTemp))
             {
                 string line;
-                while ((line = file.ReadLine()) != null)
+                while ((line = await file.ReadLineAsync()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
                     try
                     {
-                        var player = players.Single(p =>
-                            p.FirstName == attrs[0].Replace("\"", "").TrimEnd() &&
-                            p.LastName == attrs[1].Replace("\"", "").TrimEnd());
-                   
-                        var statsMajor = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
-                        var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
-                        var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
-
-                        if (statsMajor != null && statsMajor.G > 0)
+                        var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].Replace("\"", "").TrimEnd(), attrs[1].Replace("\"", "").TrimEnd(), _year);
+                        if (player != null)
                         {
-                            statsMajor.PK = Convert.ToInt16(attrs[13]);
-                            statsMajor.TPA = Convert.ToInt16(attrs[14]);
-                            statsMajor.H1B= Convert.ToInt16(attrs[15]);
-                            statsMajor.H2B = Convert.ToInt16(attrs[16]);
-                            statsMajor.H3B = Convert.ToInt16(attrs[17]);
-                            statsMajor.IBB= Convert.ToInt16(attrs[21]);
-                            statsMajor.HB = Convert.ToInt16(attrs[22]);
-                            statsMajor.SF = Convert.ToInt16(attrs[23]);
-                            statsMajor.SH = Convert.ToInt16(attrs[24]);
 
-                            await _pitchingService.AddPitchingStatAsync(statsMajor);
+                            var statsMajor =
+                                pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
+                            var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
+                            var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
+
+                            if (statsMajor != null && statsMajor.G > 0)
+                            {
+                                statsMajor.PK = Convert.ToInt16(attrs[13]);
+                                statsMajor.TPA = Convert.ToInt16(attrs[14]);
+                                statsMajor.H1B = Convert.ToInt16(attrs[15]);
+                                statsMajor.H2B = Convert.ToInt16(attrs[16]);
+                                statsMajor.H3B = Convert.ToInt16(attrs[17]);
+                                statsMajor.IBB = Convert.ToInt16(attrs[21]);
+                                statsMajor.HB = Convert.ToInt16(attrs[22]);
+                                statsMajor.SF = Convert.ToInt16(attrs[23]);
+                                statsMajor.SH = Convert.ToInt16(attrs[24]);
+
+                                await _pitchingService.AddPitchingStatAsync(statsMajor);
+                            }
+
+                            if (statsAAA != null)
+                                await _pitchingService.AddPitchingStatAsync(statsAAA);
+                            if (statsAA != null)
+                                await _pitchingService.AddPitchingStatAsync(statsAA);
                         }
-                        if (statsAAA != null)
-                            await _pitchingService.AddPitchingStatAsync(statsAAA);
-                        if (statsAA != null)
-                            await _pitchingService.AddPitchingStatAsync(statsAA);
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Failed for {0}", attrs[0]);
+                        Console.WriteLine("Failed for {0}, {1}", attrs[0], attrs[1]);
                     }
                 }
                 file.Close();

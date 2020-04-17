@@ -35,6 +35,7 @@ namespace ReadMLB2020
             ReadMLB.Services.Startup.ConfigureServices(services, config);
 
             // IMPORTANT! Register our application entry point
+            services.AddSingleton<FindPlayer>();
             services.AddSingleton<ReadMLBApp>();
             return services;
         }

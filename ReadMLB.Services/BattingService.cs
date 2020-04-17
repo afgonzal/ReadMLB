@@ -19,6 +19,7 @@ namespace ReadMLB.Services
         Task<ICollection<Batting>> GetTopLeagueBattersAsync<TKey>(short year, byte league, Expression<Func<Batting, TKey>> category, short top = 50);
 
         Task CleanYearAsync(short year);
+        Task<IEnumerable<Batting>> GetPlayerBattingStatsAsync(long playerId, short year, byte? league = null);
     }
     public class BattingService : IBattingService
     {
@@ -56,6 +57,16 @@ namespace ReadMLB.Services
         public Task CleanYearAsync(short year)
         {
             return _unitOfWork.CleanYearFromTableAsync("Batting", year);
+        }
+
+        public Task<IEnumerable<Batting>> GetPlayerBattingStatsAsync(long playerId, short year, byte? league = null)
+        {
+            if (league.HasValue)
+                return _unitOfWork.BattingStats.FindAsync(b =>
+                    b.PlayerId == playerId && b.Year == year && b.League == league.Value);
+            else
+                return _unitOfWork.BattingStats.FindAsync(b =>
+                    b.PlayerId == playerId && b.Year == year);
         }
     }
 }

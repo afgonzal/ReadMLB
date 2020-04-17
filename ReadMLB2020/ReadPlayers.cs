@@ -29,7 +29,7 @@ namespace ReadMLB2020
             Console.WriteLine("Parse players complete.");
         }
 
-        public IEnumerable<Player> GetPlayers()
+        public IList<Player> GetPlayers()
         {
             var players = new List<Player>();
             using (var file = new StreamReader(_playersTemp))
