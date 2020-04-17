@@ -18,7 +18,7 @@ namespace ReadMLB.Services
 
         Task<ICollection<Batting>> GetTopLeagueBattersAsync<TKey>(short year, byte league, Expression<Func<Batting, TKey>> category, short top = 50);
 
-        Task TruncateBattingStatsAsync();
+        Task CleanYearAsync(short year);
     }
     public class BattingService : IBattingService
     {
@@ -53,9 +53,9 @@ namespace ReadMLB.Services
             return batters.ToList();
         }
 
-        public Task TruncateBattingStatsAsync()
+        public Task CleanYearAsync(short year)
         {
-            return _unitOfWork.TruncateTableAsync("Batting");
+            return _unitOfWork.CleanYearFromTableAsync("Batting", year);
         }
     }
 }

@@ -67,7 +67,6 @@ namespace ReadMLB2020
             return stats;
         }
 
-
         public void ParseBatting()
         {
             Console.WriteLine("Reading Batting");
@@ -76,7 +75,8 @@ namespace ReadMLB2020
         }
         public async Task UpdateBattingStatsAsync(IEnumerable<Player> players)
         {
-            await _battingService.TruncateBattingStatsAsync();
+            Console.WriteLine("Update Batting stats");
+            await _battingService.CleanYearAsync(_year);
             var bStats = ParseBattingStats();
             //Iterate Battting Temp
             using (var file = new StreamReader(_battingTemp))

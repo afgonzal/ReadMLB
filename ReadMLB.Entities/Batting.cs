@@ -23,12 +23,12 @@ namespace ReadMLB.Entities
         public short RBI { get; set; }
         public short SO { get; set; }
         public short BB { get; set; }
-        public short SH { get; set; }
+        public short? SH { get; set; }
 
-        public short SF { get; set; }
+        public short? SF { get; set; }
 
-        public short HBP { get; set; }
-        public short IBB { get; set; }
+        public short? HBP { get; set; }
+        public short? IBB { get; set; }
 
         public short H
         {

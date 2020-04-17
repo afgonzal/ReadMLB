@@ -20,6 +20,7 @@ namespace ReadMLB.DataLayer.Context
 
         public DbSet<Batting> BattingStats { get; set; }
 
+        public DbSet<Pitching> PitchingStats { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,7 +28,7 @@ namespace ReadMLB.DataLayer.Context
             modelBuilder.ApplyConfiguration(new TeamMapping());
             modelBuilder.ApplyConfiguration(new PlayerMapping());
             modelBuilder.ApplyConfiguration(new BattingMapping());
-
+            modelBuilder.ApplyConfiguration(new PitchingMapping());
 
         }
 

@@ -9,12 +9,12 @@ namespace ReadMLB.DataLayer.Mappings
         {
             builder.HasKey(e => e.BattingId);
             builder.Property(e => e.BattingId).ValueGeneratedOnAdd();
+            builder.ToTable("Batting");
 
             builder.Property(e => e.PlayerId).IsRequired();
             builder.Property(e => e.Year).IsRequired();
             builder.Property(e => e.League).IsRequired();
             builder.Property(e => e.InPO).IsRequired();
-            builder.ToTable("Batting");
             builder.Property(e => e.H1B).HasColumnName("1B");
             builder.Property(e => e.H2B).HasColumnName("2B");
             builder.Property(e => e.H3B).HasColumnName("3B");

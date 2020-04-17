@@ -9,10 +9,13 @@ namespace ReadMLB.DataLayer.Repositories
     {
         ITeamsRepository Teams { get; }
         IPlayersRepository Players { get; }
+        IPitchingRepository PitchingStats { get; }
+
 
         IBattingRepository BattingStats { get; }
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
+        Task CleanYearFromTableAsync(string tableName, short year);
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -32,6 +35,10 @@ namespace ReadMLB.DataLayer.Repositories
 
         private IBattingRepository _battingStats;
         public IBattingRepository BattingStats => _battingStats ?? (_battingStats = new BattingRepository(_context));
+
+        private IPitchingRepository _pitchingStats;
+        public IPitchingRepository PitchingStats => _pitchingStats ?? (_pitchingStats = new PitchingRepository(_context));
+
         public Task<int> CompleteAsync()
         {
             return _context.SaveChangesAsync();
@@ -45,6 +52,11 @@ namespace ReadMLB.DataLayer.Repositories
         public Task TruncateTableAsync(string tableName)
         {
             return _context.Database.ExecuteSqlRawAsync($"Truncate Table {tableName}");
+        }
+
+        public Task CleanYearFromTableAsync(string tableName, short year)
+        {
+            return _context.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE Year = {year}");
         }
     }
 }
