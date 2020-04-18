@@ -32,9 +32,9 @@ namespace ReadMLB2020
         }
         internal void ParseRoster()
         {
-            Console.WriteLine("Reading Roster");
+            Console.WriteLine("Parsing Roster");
             ReadHelper.ReadList(_rosterSource, "\"Roster and Assignment Details\"", 0, 4, 5, false, _rosterTemp, true);
-            Console.WriteLine("Read Roster completed");
+            Console.WriteLine("Parse Roster completed");
         }
 
         public async Task ReadRostersAsync(IList<Player> players, IList<Team> teams)
