@@ -38,7 +38,7 @@ namespace ReadMLB2020
                 while ((line = file.ReadLine()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
-                    players.Add(new Player { PlayerNumerator = Convert.ToInt32(attrs[0]), PlayerId = Convert.ToInt64(attrs[1]), FirstName = attrs[2].Replace("\"", "").TrimEnd(), LastName = attrs[3].Replace("\"", "").TrimEnd() });
+                    players.Add(new Player { PlayerNumerator = Convert.ToInt32(attrs[0]), PlayerId = Convert.ToInt64(attrs[1]), FirstName = attrs[2].ExtractName(), LastName = attrs[3].ExtractName() });
                 }
                 file.Close();
             }

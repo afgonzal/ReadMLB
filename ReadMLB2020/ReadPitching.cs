@@ -91,7 +91,7 @@ namespace ReadMLB2020
                     var attrs = line.Split(ReadHelper.Separator);
                     try
                     {
-                        var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].Replace("\"", "").TrimEnd(), attrs[1].Replace("\"", "").TrimEnd(), _year);
+                        var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].ExtractName(), attrs[1].ExtractName(), _year);
                         if (player != null)
                         {
 

@@ -8,7 +8,7 @@ namespace ReadMLB2020
     public class ReadHelper
     {
         public static char[] Separator = new char[] { ',' };
-        public static void ReadList(string sourceFileName, string header, Int16 linesToSkip, Int16 firstNameField, Int16 lastNameField, bool numerate, string outputFileName)
+        public static void ReadList(string sourceFileName, string header, Int16 linesToSkip, Int16 firstNameField, Int16 lastNameField, bool numerate, string outputFileName, bool isRoster = false)
         {
             using (TextReader reader = new StreamReader(sourceFileName))
             {
@@ -23,12 +23,6 @@ namespace ReadMLB2020
                         //go until you find the header of the section
                         if (firstLine == header)
                         {
-                            //tw.WriteLine(line);
-                            //for (Int16 i = 0; i < extraTitleLines; i++)
-                            //{
-                            //    line = tr.ReadLine();
-                            //    tw.WriteLine(line);
-                            //}
                             //skip certain lines like extra header lines etc
                             for (Int16 i = 0; i < linesToSkip; i++)
                             {
@@ -44,10 +38,31 @@ namespace ReadMLB2020
                                     playerNumber++;
                                 }
                                 string[] fields = line.Split(Separator, StringSplitOptions.None);
-                                if ((fields[firstNameField].Replace("\"", "").Trim() != "") || ((fields[lastNameField].Replace("\"", "").Trim() != "")))
-                                    writer.WriteLine(line);
-                                else
-                                    keepReading = false;
+                                if ((fields[firstNameField].ExtractName() != "") ||
+                                    ((fields[lastNameField].ExtractName() != "")))
+                                {
+                                    if (!isRoster)
+                                        writer.WriteLine(line);
+                                    else 
+                                    {
+                                        //for roster only write lines that are ROS
+                                        if (fields[1] == "\"ROS\"")
+                                        {
+                                            if (Convert.ToByte(fields[0]) !=0 && Convert.ToByte(fields[0]) != 8 &&
+                                                Convert.ToByte(fields[0]) != 49 && Convert.ToByte(fields[0]) != 54) //skip AL and NL all start teams
+                                                writer.WriteLine(line);
+                                        }
+                                    }
+                                }
+                                else 
+                                {
+                                    if (!isRoster)
+                                        keepReading = false;
+                                    else //except roster that ends in a different way
+                                    {
+                                        keepReading = Convert.ToByte(fields[0]) < 93;
+                                    }
+                                }
                             }
                         }
                     }

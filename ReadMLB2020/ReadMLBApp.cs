@@ -4,6 +4,7 @@ using System.Linq;
 using ReadMLB.Services;
 using System.Threading.Tasks;
 using System.Threading;
+using System.IO;
 
 namespace ReadMLB2020
 {
@@ -14,22 +15,35 @@ namespace ReadMLB2020
         private readonly IPlayersService _playersService;
         private readonly IBattingService _battingService;
         private readonly IPitchingService _pitchingService;
+        private readonly IRostersService _rostersService;
         private readonly bool _updateFiles;
         private readonly FindPlayer _findPlayer;
+        private StreamWriter _outputWriter;
+        private FileStream _outputStream;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService)
         {
             _configuration = configuration;
             _teamsService = teamsService;
             _playersService = playersService;
             _battingService = battingService;
             _pitchingService = pitchingService;
+            _rostersService = rostersService;
             _updateFiles = Convert.ToBoolean(_configuration["UpdateFiles"]);
             _findPlayer = findPlayer;
+            _outputStream = new FileStream(
+                Path.Combine(_configuration["SourceFolder"], _configuration["ConsoleOutput"]), FileMode.Truncate,
+                FileAccess.Write);
+            _outputWriter = new StreamWriter(_outputStream);
         }
         public async Task RunAsync(string[] args)
         {
             Console.WriteLine("ReadMLB 2020 - Alejandro González intuido@yahoo.com");
+            if (Convert.ToBoolean(_configuration["RedirectToFile"]))
+            {
+                Console.SetOut(_outputWriter);
+            }
+
             #region Read arguments and configuration
             
             var sourceFiles = _configuration["SourceFolder"];            
@@ -86,8 +100,33 @@ namespace ReadMLB2020
                 updatePitching = Task.CompletedTask;
             }
 
-            await Task.WhenAll(addPlayers, updateBatting, updatePitching);
-          
+            var rRoster = new ReadRoster(_configuration, year, false, _findPlayer, _battingService, _rostersService);
+            //if (_updateFiles)
+                rRoster.ParseRoster();
+            Task updateRoster;
+            if (Convert.ToBoolean(_configuration["UpdateRosters"]))
+            {
+                //await rRoster.ValidatePlayersAsync(rp.GetPlayers());
+                var teams = await _teamsService.GetTeamsAsync();
+                updateRoster = Task.Run(() => rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList()));
+            }
+            else
+                updateRoster = Task.CompletedTask;
+
+               
+            await Task.WhenAll(addPlayers, updateBatting, updatePitching, updateRoster).ContinueWith(_ =>
+            {
+                if (Convert.ToBoolean(_configuration["RedirectToFile"]))
+                {
+                    _outputWriter.Close();
+                    _outputStream.Close();
+                    var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                    standardOutput.AutoFlush = true;
+                    Console.SetOut(standardOutput);
+                }
+
+            });
+            Console.WriteLine("ReadMLB done.");
         }
     }
    

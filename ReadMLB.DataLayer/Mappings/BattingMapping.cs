@@ -30,5 +30,4 @@ namespace ReadMLB.DataLayer.Mappings
             builder.HasOne(e => e.Player);
         }
     }
-
 }

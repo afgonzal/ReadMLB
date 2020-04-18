@@ -49,7 +49,7 @@ namespace ReadMLB.Entities
         {
             get
             {
-                return (short)(PA - BB - SH - SF - HBP);
+                return (short)(PA - BB - SH.GetValueOrDefault() - SF.GetValueOrDefault() - HBP.GetValueOrDefault());
             }
             protected set { }
         }
@@ -101,7 +101,7 @@ namespace ReadMLB.Entities
         {
             get
             {
-                return AB + BB + HBP + SF > 0 ? (float)Math.Round((float)(H + BB + HBP) / (float)(AB + BB + HBP + SF), 3) : 0;
+                return AB + BB + HBP + SF > 0 ? (float)Math.Round((float)(H + BB + HBP.GetValueOrDefault()) / (float)(AB + BB + HBP.GetValueOrDefault() + SF.GetValueOrDefault()), 3) : 0;
             }
             protected set { }
         }

@@ -12,6 +12,7 @@ namespace ReadMLB.Services
             services.AddScoped<IPlayersService, PlayersService>();
             services.AddScoped<IBattingService, BattingService>();
             services.AddScoped<IPitchingService, PitchingService>();
+            services.AddScoped<IRostersService, RostersService>();
         }
     }
 }

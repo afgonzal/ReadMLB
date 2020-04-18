@@ -11,6 +11,7 @@ namespace ReadMLB.DataLayer.Repositories
         IPlayersRepository Players { get; }
         IPitchingRepository PitchingStats { get; }
 
+        IRosterRepository Rosters { get; }
 
         IBattingRepository BattingStats { get; }
         Task<int> CompleteAsync();
@@ -38,6 +39,9 @@ namespace ReadMLB.DataLayer.Repositories
 
         private IPitchingRepository _pitchingStats;
         public IPitchingRepository PitchingStats => _pitchingStats ?? (_pitchingStats = new PitchingRepository(_context));
+
+        private IRosterRepository _rosters;
+        public IRosterRepository Rosters => _rosters ?? (_rosters = new RosterRepository(_context));
 
         public Task<int> CompleteAsync()
         {
