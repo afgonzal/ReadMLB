@@ -72,10 +72,7 @@ namespace ReadMLB.Entities
 
         public float BA
         {
-            get
-            {
-                return AB > 0 ? (float)Math.Round((float)H / (float)AB, 3) : 0;
-            }
+            get => AB > 0 ? (float)Math.Round((float)H / (float)AB, 3) : 0;
             protected set { }
         }
 

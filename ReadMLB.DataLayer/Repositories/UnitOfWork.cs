@@ -16,7 +16,7 @@ namespace ReadMLB.DataLayer.Repositories
         IBattingRepository BattingStats { get; }
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
-        Task CleanYearFromTableAsync(string tableName, short year);
+        Task CleanYearFromTableAsync(string tableName, short year, bool inPO);
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -58,9 +58,9 @@ namespace ReadMLB.DataLayer.Repositories
             return _context.Database.ExecuteSqlRawAsync($"Truncate Table {tableName}");
         }
 
-        public Task CleanYearFromTableAsync(string tableName, short year)
+        public Task CleanYearFromTableAsync(string tableName, short year, bool inPO)
         {
-            return _context.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE Year = {year}");
+            return _context.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE Year = {year} AND inPO = InPO");
         }
     }
 }

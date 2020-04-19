@@ -20,7 +20,7 @@ namespace ReadMLB2020
         private readonly IBattingService _battingService;
         private readonly IRostersService _rostersService;
 
-        public ReadRoster(IConfiguration config, short year, bool inPO, FindPlayer findPlayer, IBattingService battingService, IRostersService rostersService)
+        public ReadRoster(IConfiguration config, short year, FindPlayer findPlayer, IBattingService battingService, IRostersService rostersService, bool inPO)
         {
             _year = year;
             _inPO = inPO;
@@ -39,7 +39,7 @@ namespace ReadMLB2020
 
         public async Task ReadRostersAsync(IList<Player> players, IList<Team> teams)
         {
-            await _rostersService.CleanYearAsync(_year);
+            await _rostersService.CleanYearAsync(_year, _inPO);
             Console.WriteLine("Read Rosters");
             using (var file = new StreamReader(_rosterTemp))
             {

@@ -19,6 +19,7 @@ namespace ReadMLB2020
         private readonly FindPlayer _findPlayer;
         private StreamWriter _outputWriter;
         private FileStream _outputStream;
+        private readonly bool _inPO;
 
         public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService)
         {
@@ -34,6 +35,7 @@ namespace ReadMLB2020
                 Path.Combine(_configuration["SourceFolder"], _configuration["ConsoleOutput"]), FileMode.Truncate,
                 FileAccess.Write);
             _outputWriter = new StreamWriter(_outputStream);
+            _inPO = Convert.ToBoolean(_configuration["inPO"]);
         }
         public async Task RunAsync(string[] args)
         {
@@ -72,7 +74,7 @@ namespace ReadMLB2020
                 addPlayers = Task.CompletedTask;
             }
             
-            var rb = new ReadBatting(_battingService, _configuration, year);
+            var rb = new ReadBatting(_battingService, _configuration, year,_inPO);
             if (_updateFiles)
                 rb.ParseBatting();
             //Batting is required for all others
@@ -83,7 +85,7 @@ namespace ReadMLB2020
            
 
 
-            var rpitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year);
+            var rpitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year, _inPO);
             if (_updateFiles)
                 rpitch.ParsePitching();
             Task updatePitching;
@@ -97,8 +99,8 @@ namespace ReadMLB2020
                 updatePitching = Task.CompletedTask;
             }
 
-            var rRoster = new ReadRoster(_configuration, year, false, _findPlayer, _battingService, _rostersService);
-            //if (_updateFiles)
+            var rRoster = new ReadRoster(_configuration, year, _findPlayer, _battingService, _rostersService, _inPO);
+            if (_updateFiles)
                 rRoster.ParseRoster();
             Task updateRoster;
             if (Convert.ToBoolean(_configuration["UpdateRosters"]))

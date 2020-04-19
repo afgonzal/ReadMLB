@@ -20,11 +20,11 @@ namespace ReadMLB2020
         private FindPlayer _findPlayerHelper;
         private readonly IRostersService _rosterService;
 
-        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year)
+        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO)
         {
             _pitchingService = pitchingService;
             _year = year;
-            _inPo = false;
+            _inPo = inPO;
             _pitchingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
             _pitchingStats = Path.Combine(config["SourceFolder"], config["PitchingStats"]);
@@ -54,7 +54,7 @@ namespace ReadMLB2020
                         League = Convert.ToByte(attrs[3]),
                         G = Convert.ToInt16(attrs[4]),
                         GS = Convert.ToInt16(attrs[5]),
-                        IP = Convert.ToSingle(attrs[6]),
+                        IP10 = Convert.ToInt16(attrs[6]),
                         W = Convert.ToInt16(attrs[7]),
                         L = Convert.ToInt16(attrs[8]),  
                         SV = Convert.ToInt16(attrs[9]),
@@ -81,7 +81,7 @@ namespace ReadMLB2020
         internal async Task UpdatePitchingStatsAsync(IList<Player> players, IList<Team> teams)
         {
             Console.WriteLine("Update Pitching stats.");
-            await _pitchingService.CleanYearAsync(_year);
+            await _pitchingService.CleanYearAsync(_year, _inPo);
             var pStats = ParsePitchingStats();
 
             //Iterate Pitch Temp
@@ -123,7 +123,7 @@ namespace ReadMLB2020
                                     foreach (var pstat in pStats.Where(p => p.PlayerId == fPlayer.PlayerId))
                                     {
                                         if (pstat.G == Convert.ToInt16(attrs[2]) &&
-                                            pstat.IP.ToString() == attrs[3].ExtractName().Replace(".","") &&
+                                            pstat.IP10.ToString() == attrs[3].ExtractName().Replace(".","") &&
                                             pstat.W == Convert.ToInt16(attrs[4]) &&
                                             pstat.L == Convert.ToInt16(attrs[5]) &&
                                             pstat.SV == Convert.ToInt16(attrs[6]) &&
@@ -185,31 +185,31 @@ namespace ReadMLB2020
 
                         if (player != null)
                         {
+                            var statsMajor =
+                                pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
+                            var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
+                            var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
 
-                            //var statsMajor =
-                            //    pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
-                            //var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
-                            //var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
 
-                            //if (statsMajor != null && statsMajor.G > 0)
-                            //{
-                            //    statsMajor.PK = Convert.ToInt16(attrs[13]);
-                            //    statsMajor.TPA = Convert.ToInt16(attrs[14]);
-                            //    statsMajor.H1B = Convert.ToInt16(attrs[15]);
-                            //    statsMajor.H2B = Convert.ToInt16(attrs[16]);
-                            //    statsMajor.H3B = Convert.ToInt16(attrs[17]);
-                            //    statsMajor.IBB = Convert.ToInt16(attrs[21]);
-                            //    statsMajor.HB = Convert.ToInt16(attrs[22]);
-                            //    statsMajor.SF = Convert.ToInt16(attrs[23]);
-                            //    statsMajor.SH = Convert.ToInt16(attrs[24]);
+                            if (statsMajor != null && statsMajor.G > 0 && statsMajor.PitchingId ==0)
+                            {
+                                statsMajor.PK = Convert.ToInt16(attrs[13]);
+                                statsMajor.TPA = Convert.ToInt16(attrs[14]);
+                                statsMajor.H1B = Convert.ToInt16(attrs[15]);
+                                statsMajor.H2B = Convert.ToInt16(attrs[16]);
+                                statsMajor.H3B = Convert.ToInt16(attrs[17]);
+                                statsMajor.IBB = Convert.ToInt16(attrs[21]);
+                                statsMajor.HB = Convert.ToInt16(attrs[22]);
+                                statsMajor.SF = Convert.ToInt16(attrs[23]);
+                                statsMajor.SH = Convert.ToInt16(attrs[24]);
 
-                            //    //await _pitchingService.AddPitchingStatAsync(statsMajor);
-                            //}
+                                await _pitchingService.AddPitchingStatAsync(statsMajor);
+                            }
 
-                            //if (statsAAA != null)
-                            //    await _pitchingService.AddPitchingStatAsync(statsAAA);
-                            //if (statsAA != null)
-                            //    await _pitchingService.AddPitchingStatAsync(statsAA);
+                            if (statsAAA != null && statsAAA.PitchingId == 0)
+                                await _pitchingService.AddPitchingStatAsync(statsAAA);
+                            if (statsAA != null && statsAA.PitchingId == 0)
+                                await _pitchingService.AddPitchingStatAsync(statsAA);
                         }
                         else
                         {

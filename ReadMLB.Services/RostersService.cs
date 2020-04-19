@@ -10,7 +10,7 @@ namespace ReadMLB.Services
     public interface IRostersService
     {
         Task AddRosterAsync(RosterPosition newRosterPosition);
-        Task CleanYearAsync(short year);
+        Task CleanYearAsync(short year, bool inPO);
         Task<RosterPosition> FindByPlayerAsync(long playerId);
     }
     public class RostersService : IRostersService
@@ -28,9 +28,9 @@ namespace ReadMLB.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public Task CleanYearAsync(short year)
+        public Task CleanYearAsync(short year, bool inPO)
         {
-            return _unitOfWork.CleanYearFromTableAsync("Rosters", year);
+            return _unitOfWork.CleanYearFromTableAsync("Rosters", year, inPO);
         }
 
         public Task<RosterPosition> FindByPlayerAsync(long playerId)
