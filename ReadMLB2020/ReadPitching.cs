@@ -3,6 +3,7 @@ using ReadMLB.Entities;
 using ReadMLB.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -155,17 +156,26 @@ namespace ReadMLB2020
                                         foreach (var mPlayer in found)
                                         {
                                             //find it in roster
-                                            var roster = await _rosterService.FindByPlayerAsync(mPlayer.PlayerId);
-                                            if (teams.Single(t => t.TeamId == roster.TeamId).League > 0)
+                                            var roster = await _rosterService.FindByPlayerAsync(mPlayer.PlayerId, _year, _inPo);
+                                            if (roster != null)
                                             {
-                                                matchInMinors.Add(mPlayer.PlayerId);
+                                                if (teams.Single(t => t.TeamId == roster.TeamId).League > 0)
+                                                {
+                                                    matchInMinors.Add(mPlayer.PlayerId);
+                                                }
                                             }
                                         }
 
                                         if (matchInMinors.Count == 1)
                                             player = found.Single(p => p.PlayerId == matchInMinors.First());
-                                        else
+
+                                        else if (matchInMinors.Count == 0)
                                         {
+                                            Console.WriteLine("Pitcher not played {0} {1}", attrs[0].ExtractName(),
+                                                attrs[1].ExtractName());
+                                        }
+                                        else {
+                                            
                                             Console.WriteLine("Multiple matching in minors {0} {1}", attrs[0].ExtractName(),
                                                 attrs[1].ExtractName());
                                         }
