@@ -60,7 +60,7 @@ namespace ReadMLB.DataLayer.Repositories
 
         public Task CleanYearFromTableAsync(string tableName, short year, bool inPO)
         {
-            return _context.Database.ExecuteSqlRawAsync($"DELETE FROM {tableName} WHERE Year = {year} AND inPO = InPO");
+            return _context.Database.ExecuteSqlRawAsync(sql: $"DELETE FROM {tableName} WHERE Year = {year} AND InPO = {(inPO ? 1 : 0)}");
         }
     }
 }
