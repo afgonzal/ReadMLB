@@ -64,14 +64,9 @@ namespace ReadMLB2020
             var rp = new ReadPlayers(_configuration, _playersService);
             if (_updateFiles)
                 rp.ParsePlayers();
-            Task addPlayers;
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                addPlayers = Task.Run(() => rp.AddNewPlayersToDBAsync());
-            }
-            else
-            {
-                addPlayers = Task.CompletedTask;
+                await rp.AddNewPlayersToDBAsync();
             }
             
             var rb = new ReadBatting(_battingService, _configuration, year,_inPO);
@@ -82,39 +77,29 @@ namespace ReadMLB2020
             {                
                  await rb.UpdateBattingStatsAsync(rp.GetPlayers());
             }
-           
 
-
-            var rpitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year, _inPO);
-            if (_updateFiles)
-                rpitch.ParsePitching();
-            Task updatePitching;
-            if (Convert.ToBoolean(_configuration["UpdatePitching"]))
-            {
-                var teams = await _teamsService.GetTeamsAsync();
-                updatePitching = Task.Run(() => rpitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList()));
-            }
-            else
-            {
-                updatePitching = Task.CompletedTask;
-            }
 
             var rRoster = new ReadRoster(_configuration, year, _findPlayer, _battingService, _rostersService, _inPO);
             if (_updateFiles)
                 rRoster.ParseRoster();
-            Task updateRoster;
             if (Convert.ToBoolean(_configuration["UpdateRosters"]))
             {
                 //await rRoster.ValidatePlayersAsync(rp.GetPlayers());
                 var teams = await _teamsService.GetTeamsAsync();
-                updateRoster = Task.Run(() => rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList()));
+                await rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList());
             }
-            else
-                updateRoster = Task.CompletedTask;
+
+            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year, _inPO);
+            if (_updateFiles)
+                rPitch.ParsePitching();
+            if (Convert.ToBoolean(_configuration["UpdatePitching"]))
+            {
+                var teams = await _teamsService.GetTeamsAsync();
+                await rPitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList());
+            }
 
                
-            await Task.WhenAll(addPlayers, updatePitching, updateRoster).ContinueWith(_ =>
-            {
+           
                 if (Convert.ToBoolean(_configuration["RedirectToFile"]))
                 {
                     _outputWriter.Close();
@@ -124,7 +109,6 @@ namespace ReadMLB2020
                     Console.SetOut(standardOutput);
                 }
 
-            });
             Console.WriteLine("ReadMLB done.");
         }
     }

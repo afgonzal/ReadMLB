@@ -28,6 +28,8 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.BB9).HasColumnType("decimal(6,3)");
             builder.Property(e => e.H9).HasColumnType("decimal(6,3)");
             builder.Property(e => e.H9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.ERA).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.KBB).HasColumnType("decimal(6,3)");
 
         }
     }

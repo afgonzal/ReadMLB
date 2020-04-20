@@ -55,7 +55,8 @@ namespace ReadMLB2020
                         Slot = Convert.ToByte(attrs[3]),
                         PlayerId = player.PlayerId,
                         Year = _year,
-                        League = teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault()
+                        League = teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault(),
+                        InPO =  _inPO
                     };
                     //Console.WriteLine("{0} {1} {2}", slot.Slot, player.FirstName, player.LastName);
 

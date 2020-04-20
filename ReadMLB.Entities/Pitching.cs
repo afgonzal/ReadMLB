@@ -55,29 +55,29 @@ namespace ReadMLB.Entities
 
         public float BB9
         {
-            get => (float) (IP10 > 0 ? BB *90 / IP10 : 0);
+            get => (float) (IP10 > 0 ? Math.Round((float)(BB *90) / (float)IP10,3) : 0);
             protected set {}
         }
         public float H9
         {
-            get => (float)(IP10 > 0 ? H *90 / IP10  : 0);
+            get => (float)(IP10 > 0 ? Math.Round((float)(H *90) / (float)IP10,3)  : 0);
             protected set { }
         }
 
         public float HR9
         {
-            get => (float)(IP10 > 0 ? HR *90 / IP10 : 0);
+            get => (float)(IP10 > 0 ? Math.Round((float)(HR *90) / (float)IP10,3) : 0);
             protected set { }
         }
         public float K9
         {
-            get => (float)(IP10 > 0 ? K *90 / IP10 : 0);
+            get => (float)(IP10 > 0 ? Math.Round((float)(K *90 )/ (float)IP10,3) : 0);
             protected set { }
         }
 
         public float WHIP
         {
-            get => (float) (IP10 > 0 ? (H + BB) / IP10 / 10 : 0);
+            get => (float) (IP10 > 0 ? Math.Round((float)((H + BB)*10) / (float)IP10,3) : 0);
             protected set{}
         }
         //TODO mal calculada
@@ -86,8 +86,20 @@ namespace ReadMLB.Entities
         /// </summary>
         public short IPG
         {
-            get => (short) (G > 0 ? IP10 / G / 10 : 0);
+            get => (short) (G > 0 ? (float)IP10 / (float)G / 10F : 0);
             protected set {}
+        }
+
+        public float ERA
+        {
+            get => (float) (IP10 > 0 ? Math.Round((float) (ER * 90) / (float) IP10,3) : 0);
+            protected set{}
+        }
+
+        public float KBB
+        {
+            get => (float)(BB >0 ? Math.Round((float)K/(float)BB,3) :0);
+            protected  set {}
         }
 
     }
