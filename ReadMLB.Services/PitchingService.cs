@@ -6,7 +6,7 @@ namespace ReadMLB.Services
 {
     public interface IPitchingService
     {
-        Task CleanYearAsync(short year);
+        Task CleanYearAsync(short year, bool inPO);
         Task<long> AddPitchingStatAsync(Pitching statsMajor);
     }
     public class PitchingService : IPitchingService
@@ -18,9 +18,9 @@ namespace ReadMLB.Services
             _unitOfWork = unitOfWork;
         }
 
-        public Task CleanYearAsync(short year)
+        public Task CleanYearAsync(short year, bool inPO)
         {
-            return _unitOfWork.CleanYearFromTableAsync("Pitching", year);
+            return _unitOfWork.CleanYearFromTableAsync("Pitching", year, inPO);
         }
 
         public async Task<long> AddPitchingStatAsync(Pitching pitchingStat)

@@ -20,7 +20,7 @@ namespace ReadMLB2020
         private readonly IBattingService _battingService;
         private readonly IRostersService _rostersService;
 
-        public ReadRoster(IConfiguration config, short year, bool inPO, FindPlayer findPlayer, IBattingService battingService, IRostersService rostersService)
+        public ReadRoster(IConfiguration config, short year, FindPlayer findPlayer, IBattingService battingService, IRostersService rostersService, bool inPO)
         {
             _year = year;
             _inPO = inPO;
@@ -32,14 +32,14 @@ namespace ReadMLB2020
         }
         internal void ParseRoster()
         {
-            Console.WriteLine("Reading Roster");
+            Console.WriteLine("Parsing Roster");
             ReadHelper.ReadList(_rosterSource, "\"Roster and Assignment Details\"", 0, 4, 5, false, _rosterTemp, true);
-            Console.WriteLine("Read Roster completed");
+            Console.WriteLine("Parse Roster completed");
         }
 
         public async Task ReadRostersAsync(IList<Player> players, IList<Team> teams)
         {
-            await _rostersService.CleanYearAsync(_year);
+            await _rostersService.CleanYearAsync(_year, _inPO);
             Console.WriteLine("Read Rosters");
             using (var file = new StreamReader(_rosterTemp))
             {
@@ -55,7 +55,8 @@ namespace ReadMLB2020
                         Slot = Convert.ToByte(attrs[3]),
                         PlayerId = player.PlayerId,
                         Year = _year,
-                        League = teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault()
+                        League = teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault(),
+                        InPO =  _inPO
                     };
                     //Console.WriteLine("{0} {1} {2}", slot.Slot, player.FirstName, player.LastName);
 

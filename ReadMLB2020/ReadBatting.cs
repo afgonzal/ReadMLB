@@ -20,9 +20,9 @@ namespace ReadMLB2020
         private readonly IBattingService _battingService;
 
 
-        public ReadBatting(IBattingService battingService, IConfiguration config, short year)
+        public ReadBatting(IBattingService battingService, IConfiguration config, short year, bool inPO)
         {
-            _inPO = false;
+            _inPO = inPO;
             _year = year;
             _battingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
             _battingTemp = Path.Combine(config["SourceFolder"], config["BattingTempStats"]);
@@ -76,7 +76,7 @@ namespace ReadMLB2020
         public async Task UpdateBattingStatsAsync(IEnumerable<Player> players)
         {
             Console.WriteLine("Update Batting stats");
-            await _battingService.CleanYearAsync(_year);
+            await _battingService.CleanYearAsync(_year, _inPO);
             var bStats = ParseBattingStats();
             //Iterate Battting Temp
             using (var file = new StreamReader(_battingTemp))

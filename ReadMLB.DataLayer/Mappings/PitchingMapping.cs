@@ -21,6 +21,15 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.H3B).HasColumnName("3B");
             builder.HasOne(e => e.Team).WithMany().HasForeignKey(e => e.TeamId);
             builder.HasOne(e => e.Player);
+            
+            builder.Property(e => e.WP).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.H9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.HR9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.BB9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.H9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.H9).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.ERA).HasColumnType("decimal(6,3)");
+            builder.Property(e => e.KBB).HasColumnType("decimal(6,3)");
 
         }
     }

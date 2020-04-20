@@ -3,7 +3,6 @@ using System;
 using System.Linq;
 using ReadMLB.Services;
 using System.Threading.Tasks;
-using System.Threading;
 using System.IO;
 
 namespace ReadMLB2020
@@ -20,6 +19,7 @@ namespace ReadMLB2020
         private readonly FindPlayer _findPlayer;
         private StreamWriter _outputWriter;
         private FileStream _outputStream;
+        private readonly bool _inPO;
 
         public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService)
         {
@@ -35,6 +35,7 @@ namespace ReadMLB2020
                 Path.Combine(_configuration["SourceFolder"], _configuration["ConsoleOutput"]), FileMode.Truncate,
                 FileAccess.Write);
             _outputWriter = new StreamWriter(_outputStream);
+            _inPO = Convert.ToBoolean(_configuration["inPO"]);
         }
         public async Task RunAsync(string[] args)
         {
@@ -63,59 +64,42 @@ namespace ReadMLB2020
             var rp = new ReadPlayers(_configuration, _playersService);
             if (_updateFiles)
                 rp.ParsePlayers();
-            Task addPlayers;
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                addPlayers = Task.Run(() => rp.AddNewPlayersToDBAsync());
-            }
-            else
-            {
-                addPlayers = Task.CompletedTask;
+                await rp.AddNewPlayersToDBAsync();
             }
             
-            var rb = new ReadBatting(_battingService, _configuration, year);
+            var rb = new ReadBatting(_battingService, _configuration, year,_inPO);
             if (_updateFiles)
                 rb.ParseBatting();
-            
-            Task updateBatting;
+            //Batting is required for all others
             if (Convert.ToBoolean(_configuration["UpdateBatting"]))
             {                
-                updateBatting = Task.Run(() => rb.UpdateBattingStatsAsync(rp.GetPlayers()));
-            }
-            else
-            {
-                updateBatting = Task.CompletedTask;
+                 await rb.UpdateBattingStatsAsync(rp.GetPlayers());
             }
 
-            var rpitch = new ReadPitching(_pitchingService, _findPlayer, _configuration, year);
+
+            var rRoster = new ReadRoster(_configuration, year, _findPlayer, _battingService, _rostersService, _inPO);
             if (_updateFiles)
-                rpitch.ParsePitching();
-            Task updatePitching;
-            if (Convert.ToBoolean(_configuration["UpdatePitching"]))
-            {
-                updatePitching = Task.Run(() => rpitch.UpdatePitchingStatsAsync(rp.GetPlayers()));
-            }
-            else
-            {
-                updatePitching = Task.CompletedTask;
-            }
-
-            var rRoster = new ReadRoster(_configuration, year, false, _findPlayer, _battingService, _rostersService);
-            //if (_updateFiles)
                 rRoster.ParseRoster();
-            Task updateRoster;
             if (Convert.ToBoolean(_configuration["UpdateRosters"]))
             {
                 //await rRoster.ValidatePlayersAsync(rp.GetPlayers());
                 var teams = await _teamsService.GetTeamsAsync();
-                updateRoster = Task.Run(() => rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList()));
+                await rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList());
             }
-            else
-                updateRoster = Task.CompletedTask;
+
+            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year, _inPO);
+            if (_updateFiles)
+                rPitch.ParsePitching();
+            if (Convert.ToBoolean(_configuration["UpdatePitching"]))
+            {
+                var teams = await _teamsService.GetTeamsAsync();
+                await rPitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList());
+            }
 
                
-            await Task.WhenAll(addPlayers, updateBatting, updatePitching, updateRoster).ContinueWith(_ =>
-            {
+           
                 if (Convert.ToBoolean(_configuration["RedirectToFile"]))
                 {
                     _outputWriter.Close();
@@ -125,7 +109,6 @@ namespace ReadMLB2020
                     Console.SetOut(standardOutput);
                 }
 
-            });
             Console.WriteLine("ReadMLB done.");
         }
     }

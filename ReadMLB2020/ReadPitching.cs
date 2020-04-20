@@ -3,6 +3,7 @@ using ReadMLB.Entities;
 using ReadMLB.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,16 +19,18 @@ namespace ReadMLB2020
         private readonly string _pitchingTemp;
         private readonly string _pitchingStats;
         private FindPlayer _findPlayerHelper;
+        private readonly IRostersService _rosterService;
 
-        public ReadPitching(IPitchingService pitchingService, FindPlayer findPlayer, IConfiguration config, short year)
+        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO)
         {
             _pitchingService = pitchingService;
             _year = year;
-            _inPo = false;
+            _inPo = inPO;
             _pitchingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
             _pitchingStats = Path.Combine(config["SourceFolder"], config["PitchingStats"]);
             _findPlayerHelper = findPlayer;
+            _rosterService = rostersService;
         }
 
         internal void ParsePitching()
@@ -52,7 +55,7 @@ namespace ReadMLB2020
                         League = Convert.ToByte(attrs[3]),
                         G = Convert.ToInt16(attrs[4]),
                         GS = Convert.ToInt16(attrs[5]),
-                        IP = Convert.ToSingle(attrs[6]),
+                        IP10 = Convert.ToInt16(attrs[6]),
                         W = Convert.ToInt16(attrs[7]),
                         L = Convert.ToInt16(attrs[8]),  
                         SV = Convert.ToInt16(attrs[9]),
@@ -76,10 +79,10 @@ namespace ReadMLB2020
         }
 
 
-        internal async Task UpdatePitchingStatsAsync(IList<Player> players)
+        internal async Task UpdatePitchingStatsAsync(IList<Player> players, IList<Team> teams)
         {
             Console.WriteLine("Update Pitching stats.");
-            await _pitchingService.CleanYearAsync(_year);
+            await _pitchingService.CleanYearAsync(_year, _inPo);
             var pStats = ParsePitchingStats();
 
             //Iterate Pitch Temp
@@ -91,16 +94,114 @@ namespace ReadMLB2020
                     var attrs = line.Split(ReadHelper.Separator);
                     try
                     {
-                        var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].ExtractName(), attrs[1].ExtractName(), _year);
+                        Player player = null;
+                        //var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].ExtractName(), attrs[1].ExtractName(), _year);
+                        var found = players.Where(p =>
+                            p.FirstName == attrs[0].ExtractName() && p.LastName == attrs[1].ExtractName()).ToList();
+                        
+                        if (found.Count > 1)
+                        {
+                            var foundPitchers = new List<long>();
+                            foreach (var fPlayer in found)
+                            {
+                                var fStats = pStats.Where(p => p.PlayerId == fPlayer.PlayerId);
+                                if (fStats.Any()) //it's a pitcher
+                                {
+                                    foundPitchers.Add(fPlayer.PlayerId);
+                                }
+                            }
+
+                            if (foundPitchers.Count == 1) //that's him
+                            {
+                                player = found.Single(p => p.PlayerId == foundPitchers.First());
+                            }
+                            else //both are pitchers!!!
+                            {
+                                var pitchersWMatchingStats = new List<long>();
+                                //compare stats 
+                                foreach (var fPlayer in found)
+                                {
+                                    foreach (var pstat in pStats.Where(p => p.PlayerId == fPlayer.PlayerId))
+                                    {
+                                        if (pstat.G == Convert.ToInt16(attrs[2]) &&
+                                            pstat.IP10.ToString() == attrs[3].ExtractName().Replace(".","") &&
+                                            pstat.W == Convert.ToInt16(attrs[4]) &&
+                                            pstat.L == Convert.ToInt16(attrs[5]) &&
+                                            pstat.SV == Convert.ToInt16(attrs[6]) &&
+                                            pstat.BSV == Convert.ToInt16(attrs[7]) &&
+                                            pstat.R == Convert.ToInt16(attrs[8]) &&
+                                            pstat.ER == Convert.ToInt16(attrs[9]) &&
+                                            pstat.GS == Convert.ToInt16(attrs[10]) &&
+                                            pstat.CG == Convert.ToInt16(attrs[11]) &&
+                                            pstat.SHO == Convert.ToInt16(attrs[12]) &&
+                                            pstat.HR == Convert.ToInt16(attrs[18]) &&
+                                            pstat.K == Convert.ToInt16(attrs[19]) &&
+                                            pstat.BB == Convert.ToInt16(attrs[20]))
+                                        {
+                                            pitchersWMatchingStats.Add(fPlayer.PlayerId);
+                                        }
+                                    }
+                                }
+                                
+                                if (pitchersWMatchingStats.Count == 1) //that's him
+                                {
+                                    player = found.Single(p => p.PlayerId == foundPitchers.First());
+                                }
+                                else
+                                {
+                                    if (pitchersWMatchingStats.Count == 0)
+                                    {
+                                        //Player is in the minors
+                                        var matchInMinors = new List<long>();
+                                        foreach (var mPlayer in found)
+                                        {
+                                            //find it in roster
+                                            var roster = await _rosterService.FindByPlayerAsync(mPlayer.PlayerId, _year, _inPo);
+                                            if (roster != null)
+                                            {
+                                                if (teams.Single(t => t.TeamId == roster.TeamId).League > 0)
+                                                {
+                                                    matchInMinors.Add(mPlayer.PlayerId);
+                                                }
+                                            }
+                                        }
+
+                                        if (matchInMinors.Count == 1)
+                                            player = found.Single(p => p.PlayerId == matchInMinors.First());
+
+                                        else if (matchInMinors.Count == 0)
+                                        {
+                                            Console.WriteLine("Pitcher not played {0} {1}", attrs[0].ExtractName(),
+                                                attrs[1].ExtractName());
+                                        }
+                                        else {
+                                            
+                                            Console.WriteLine("Multiple matching in minors {0} {1}", attrs[0].ExtractName(),
+                                                attrs[1].ExtractName());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Multiple matching stats {0} {1}", attrs[0].ExtractName(),
+                                            attrs[1].ExtractName());
+                                    }
+                                }
+                            }
+                        }
+                        else //good there's just one player with same name
+                        {
+                            player = found.First();
+                        }
+
                         if (player != null)
                         {
-
                             var statsMajor =
                                 pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
                             var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
                             var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
 
-                            if (statsMajor != null && statsMajor.G > 0)
+
+                            if (statsMajor != null && statsMajor.G > 0 && statsMajor.PitchingId ==0)
                             {
                                 statsMajor.PK = Convert.ToInt16(attrs[13]);
                                 statsMajor.TPA = Convert.ToInt16(attrs[14]);
@@ -115,15 +216,19 @@ namespace ReadMLB2020
                                 await _pitchingService.AddPitchingStatAsync(statsMajor);
                             }
 
-                            if (statsAAA != null)
+                            if (statsAAA != null && statsAAA.PitchingId == 0)
                                 await _pitchingService.AddPitchingStatAsync(statsAAA);
-                            if (statsAA != null)
+                            if (statsAA != null && statsAA.PitchingId == 0)
                                 await _pitchingService.AddPitchingStatAsync(statsAA);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not found pitcher {0} {1}", attrs[0].ExtractName(), attrs[1].ExtractName());
                         }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Failed for {0}, {1}", attrs[0], attrs[1]);
+                        Console.WriteLine("Failed for {0}, {1}", attrs[0].ExtractName(), attrs[1].ExtractName());
                     }
                 }
                 file.Close();
