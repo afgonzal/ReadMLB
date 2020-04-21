@@ -15,8 +15,9 @@ namespace ReadMLB.DataLayer.Repositories
 
         IRunningRepository RunningStats{ get; }
 
-
         IBattingRepository BattingStats { get; }
+        IDefenseRepository DefenseStats { get; }
+
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
         Task CleanYearFromTableAsync(string tableName, short year, bool inPO);
@@ -48,6 +49,9 @@ namespace ReadMLB.DataLayer.Repositories
 
         private IRunningRepository _runningStats;
         public IRunningRepository RunningStats => _runningStats ?? (_runningStats = new RunningRepository(_context));
+
+        private IDefenseRepository _defenseStats;
+        public IDefenseRepository DefenseStats => _defenseStats ?? (_defenseStats = new DefenseRepository(_context));
         public Task<int> CompleteAsync()
         {
             return _context.SaveChangesAsync();

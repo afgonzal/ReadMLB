@@ -22,8 +22,9 @@ namespace ReadMLB2020
         private FileStream _outputStream;
         private readonly bool _inPO;
         private readonly IRunningStatsService _runningService;
+        private readonly IDefenseStatsService _defenseService;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService)
         {
             _configuration = configuration;
             _teamsService = teamsService;
@@ -39,6 +40,7 @@ namespace ReadMLB2020
             _outputWriter = new StreamWriter(_outputStream);
             _inPO = Convert.ToBoolean(_configuration["inPO"]);
             _runningService = runningService;
+            _defenseService = defenseService;
         }
         public async Task RunAsync(string[] args)
         {
@@ -108,6 +110,12 @@ namespace ReadMLB2020
                 await rRunning.ReadRunningAsync();
             }
 
+            if (Convert.ToBoolean(_configuration["UpdateDefense"]))
+            {
+                var rDefense= new ReadDefense(_defenseService, _configuration, year, _inPO);
+                await rDefense.ReadDefenseAsync();
+            }
+
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))
             {
                 _outputWriter.Close();
@@ -116,6 +124,8 @@ namespace ReadMLB2020
                 standardOutput.AutoFlush = true;
                 Console.SetOut(standardOutput);
             }
+
+
 
             Console.WriteLine("ReadMLB done.");
         }

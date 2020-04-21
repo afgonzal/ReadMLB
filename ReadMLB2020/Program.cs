@@ -31,7 +31,6 @@ namespace ReadMLB2020
             // Add the config to our DI container for later user
             services.AddSingleton(config);
 
-
             ReadMLB.Services.Startup.ConfigureServices(services, config);
 
             // IMPORTANT! Register our application entry point
