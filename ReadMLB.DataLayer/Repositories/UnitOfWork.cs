@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ReadMLB.DataLayer.Context;
+﻿using ReadMLB.DataLayer.Context;
 using System;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReadMLB.DataLayer.Repositories
 {
@@ -12,6 +12,9 @@ namespace ReadMLB.DataLayer.Repositories
         IPitchingRepository PitchingStats { get; }
 
         IRosterRepository Rosters { get; }
+
+        IRunningRepository RunningStats{ get; }
+
 
         IBattingRepository BattingStats { get; }
         Task<int> CompleteAsync();
@@ -43,6 +46,8 @@ namespace ReadMLB.DataLayer.Repositories
         private IRosterRepository _rosters;
         public IRosterRepository Rosters => _rosters ?? (_rosters = new RosterRepository(_context));
 
+        private IRunningRepository _runningStats;
+        public IRunningRepository RunningStats => _runningStats ?? (_runningStats = new RunningRepository(_context));
         public Task<int> CompleteAsync()
         {
             return _context.SaveChangesAsync();
