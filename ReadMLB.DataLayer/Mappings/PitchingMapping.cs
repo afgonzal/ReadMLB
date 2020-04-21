@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReadMLB.Entities;
+
 namespace ReadMLB.DataLayer.Mappings
 {
     public class PitchingMapping : IEntityTypeConfiguration<Pitching>
@@ -10,7 +11,6 @@ namespace ReadMLB.DataLayer.Mappings
             builder.HasKey(e => e.PitchingId);
             builder.Property(e => e.PitchingId).ValueGeneratedOnAdd();
             builder.ToTable("Pitching");
-
 
             builder.Property(e => e.PlayerId).IsRequired();
             builder.Property(e => e.Year).IsRequired();
@@ -24,5 +24,4 @@ namespace ReadMLB.DataLayer.Mappings
 
         }
     }
-
 }

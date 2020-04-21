@@ -9,7 +9,7 @@ namespace ReadMLB.DataLayer.Context
 {
     public class FranchiseContext : DbContext
     {
-        public static readonly ILoggerFactory _logger = new LoggerFactory(new[] { new DebugLoggerProvider() });
+        public static readonly ILoggerFactory Logger = new LoggerFactory(new[] { new DebugLoggerProvider() });
         public FranchiseContext(DbContextOptions<FranchiseContext> options) : base(options)
         {
         }
@@ -24,6 +24,8 @@ namespace ReadMLB.DataLayer.Context
 
         public DbSet<RosterPosition> Rosters { get; set; }
 
+        public DbSet<Running> RunningStats { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new TeamMapping());
@@ -31,12 +33,13 @@ namespace ReadMLB.DataLayer.Context
             modelBuilder.ApplyConfiguration(new BattingMapping());
             modelBuilder.ApplyConfiguration(new PitchingMapping());
             modelBuilder.ApplyConfiguration(new RosterPositionMapping());
+            modelBuilder.ApplyConfiguration(new RunningMapping());
 
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseLoggerFactory(_logger);
+            optionsBuilder.UseLoggerFactory(Logger);
             optionsBuilder.EnableSensitiveDataLogging();
             base.OnConfiguring(optionsBuilder);           
         }
