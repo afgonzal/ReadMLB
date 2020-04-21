@@ -1,12 +1,12 @@
-select count(*) from players
+select count(*) as Players from players
 
-SELECT InPO,count(*) from batting GROUP BY InPO
+SELECT InPO,count(*) as Batting from batting GROUP BY InPO
 
-SELECT InPO,count(*) from rosters GROUP BY InPO
+SELECT InPO,count(*) as Rosters from rosters GROUP BY InPO
 
-SELECT InPO, count(*) from pitching GROUP BY InPO
+SELECT InPO, count(*) as Pitching from pitching GROUP BY InPO
 
---2004 2366 4438 2166 1471
+SELECT InPO, count(*) as Running from Running GROUP BY InPO
 
+SELECT InPO, count(*) as Defense from Defense GROUP BY InPO
 
---SELECT tOP 50 * FROM Batting

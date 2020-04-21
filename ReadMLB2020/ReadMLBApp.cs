@@ -15,13 +15,16 @@ namespace ReadMLB2020
         private readonly IBattingService _battingService;
         private readonly IPitchingService _pitchingService;
         private readonly IRostersService _rostersService;
+
         private readonly bool _updateFiles;
         private readonly FindPlayer _findPlayer;
         private StreamWriter _outputWriter;
         private FileStream _outputStream;
         private readonly bool _inPO;
+        private readonly IRunningStatsService _runningService;
+        private readonly IDefenseStatsService _defenseService;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService)
         {
             _configuration = configuration;
             _teamsService = teamsService;
@@ -36,6 +39,8 @@ namespace ReadMLB2020
                 FileAccess.Write);
             _outputWriter = new StreamWriter(_outputStream);
             _inPO = Convert.ToBoolean(_configuration["inPO"]);
+            _runningService = runningService;
+            _defenseService = defenseService;
         }
         public async Task RunAsync(string[] args)
         {
@@ -98,19 +103,31 @@ namespace ReadMLB2020
                 await rPitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList());
             }
 
-               
-           
-                if (Convert.ToBoolean(_configuration["RedirectToFile"]))
-                {
-                    _outputWriter.Close();
-                    _outputStream.Close();
-                    var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-                    standardOutput.AutoFlush = true;
-                    Console.SetOut(standardOutput);
-                }
+
+            if (Convert.ToBoolean(_configuration["UpdateRunning"]))
+            {
+                var rRunning = new ReadRunning(_runningService, _configuration, year, _inPO);
+                await rRunning.ReadRunningAsync();
+            }
+
+            if (Convert.ToBoolean(_configuration["UpdateDefense"]))
+            {
+                var rDefense= new ReadDefense(_defenseService, _configuration, year, _inPO);
+                await rDefense.ReadDefenseAsync();
+            }
+
+            if (Convert.ToBoolean(_configuration["RedirectToFile"]))
+            {
+                _outputWriter.Close();
+                _outputStream.Close();
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                standardOutput.AutoFlush = true;
+                Console.SetOut(standardOutput);
+            }
+
+
 
             Console.WriteLine("ReadMLB done.");
         }
     }
-   
 }
