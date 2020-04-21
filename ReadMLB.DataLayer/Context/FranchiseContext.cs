@@ -26,6 +26,9 @@ namespace ReadMLB.DataLayer.Context
 
         public DbSet<Running> RunningStats { get; set; }
 
+        public DbSet<Defense> DefenseStats { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new TeamMapping());
@@ -34,6 +37,7 @@ namespace ReadMLB.DataLayer.Context
             modelBuilder.ApplyConfiguration(new PitchingMapping());
             modelBuilder.ApplyConfiguration(new RosterPositionMapping());
             modelBuilder.ApplyConfiguration(new RunningMapping());
+            modelBuilder.ApplyConfiguration(new DefenseMapping());
 
         }
 
