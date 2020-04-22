@@ -8,7 +8,8 @@ namespace ReadMLB2020
     public class ReadHelper
     {
         public static char[] Separator = new char[] { ',' };
-        public static void ReadList(string sourceFileName, string header, Int16 linesToSkip, Int16 firstNameField, Int16 lastNameField, bool numerate, string outputFileName, bool isRoster = false)
+        public static void ReadList(string sourceFileName, string header, short linesToSkip, short firstNameField,
+            short lastNameField, bool numerate, string outputFileName, bool isRoster = false, string ros = "")
         {
             using (TextReader reader = new StreamReader(sourceFileName))
             {
@@ -46,7 +47,7 @@ namespace ReadMLB2020
                                     else 
                                     {
                                         //for roster only write lines that are ROS
-                                        if (fields[1] == "\"ROS\"")
+                                        if (fields[1] == ros)
                                         {
                                             if (Convert.ToByte(fields[0]) !=0 && Convert.ToByte(fields[0]) != 8 &&
                                                 Convert.ToByte(fields[0]) != 49 && Convert.ToByte(fields[0]) != 54) //skip AL and NL all start teams
