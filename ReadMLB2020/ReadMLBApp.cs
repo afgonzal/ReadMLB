@@ -94,8 +94,8 @@ namespace ReadMLB2020
                 rp.ParsePlayers();
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                await rp.VerifyPlayersAsync();
-                //await rp.AddNewPlayersToDBAsync();
+                //await rp.VerifyPlayersAsync();
+                await rp.AddNewPlayersToDbAsync();
             }
             
             var rb = new ReadBatting(_battingService, _configuration, _year,_inPO);
@@ -104,7 +104,7 @@ namespace ReadMLB2020
             //Batting is required for all others
             if (Convert.ToBoolean(_configuration["UpdateBatting"]))
             {                
-                 await rb.UpdateBattingStatsAsync(rp.GetPlayers());
+                 await rb.UpdateBattingStatsAsync(await rp.GetPlayersAsync());
             }
 
 
@@ -118,12 +118,12 @@ namespace ReadMLB2020
             {
                 //await rRoster.ValidatePlayersAsync(rp.GetPlayers());
                 var teams = await _teamsService.GetTeamsAsync();
-                await rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList());
+                await rRoster.ReadRostersAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
             if (Convert.ToBoolean(_configuration["UpdateRotations"]))
             {
                 var teams = await _teamsService.GetTeamsAsync();
-                await rRoster.ReadRotationsAsync(rp.GetPlayers(), teams.ToList());
+                await rRoster.ReadRotationsAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
 
             var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, _year, _inPO);
@@ -132,7 +132,7 @@ namespace ReadMLB2020
             if (Convert.ToBoolean(_configuration["UpdatePitching"]))
             {
                 var teams = await _teamsService.GetTeamsAsync();
-                await rPitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList());
+                await rPitch.UpdatePitchingStatsAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
 
 

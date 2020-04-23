@@ -9,6 +9,7 @@ namespace ReadMLB.DataLayer.Mappings
         public void Configure(EntityTypeBuilder<Player> builder)
         {
             builder.HasKey(e => e.PlayerId);
+            builder.Property(e => e.PlayerId).ValueGeneratedOnAdd();
             builder.Property(e => e.FirstName).HasMaxLength(50);
             builder.Property(e => e.LastName).HasMaxLength(50);
             builder.Ignore(p => p.PlayerNumerator);
