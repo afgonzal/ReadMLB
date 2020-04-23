@@ -8,8 +8,11 @@ import { Component, OnInit } from '@angular/core';
 export class TeamDetailComponent implements OnInit {
 
   constructor() { }
+  team;
 
   ngOnInit(): void {
+    this.team = {TeamCity: 'New York', TeamName: 'Yankees', TeamAbr: 'NYY', Org: 'NYY'};
+    this.team.Logo = 'assets/logos/' + this.team.Org + '-' + this.team.TeamAbr + '.png';
   }
 
 }

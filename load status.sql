@@ -1,4 +1,4 @@
-select count(*) as Players from players
+select [Year],count(*) as Players from players GROUP BY [Year]
 
 SELECT [Year],InPO,count(*) as Batting from batting GROUP BY [Year],InPO
 

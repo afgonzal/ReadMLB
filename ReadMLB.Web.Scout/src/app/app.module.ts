@@ -5,13 +5,21 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { TeamsComponent } from './teams/teams.component';
+import { BatterComponent } from './batter/batter.component';
+import { PitcherComponent } from './pitcher/pitcher.component';
 import { TeamDetailComponent } from './teams/team-detail/team-detail.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    TeamDetailComponent
+    TeamsComponent,
+    BatterComponent,
+    PitcherComponent,
+    TeamDetailComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

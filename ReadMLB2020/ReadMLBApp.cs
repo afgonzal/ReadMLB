@@ -94,7 +94,6 @@ namespace ReadMLB2020
                 rp.ParsePlayers();
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                //await rp.VerifyPlayersAsync();
                 await rp.AddNewPlayersToDbAsync();
             }
             
@@ -104,7 +103,7 @@ namespace ReadMLB2020
             //Batting is required for all others
             if (Convert.ToBoolean(_configuration["UpdateBatting"]))
             {                
-                 await rb.UpdateBattingStatsAsync(await rp.GetPlayersAsync());
+                 await rb.UpdateBattingStatsAsync(await rp.GetPlayersAsync());;
             }
 
 

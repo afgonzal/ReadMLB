@@ -34,9 +34,7 @@ namespace ReadMLB2020
 
         public async Task<IList<Player>> GetPlayersAsync()
         {
-            if (_players == null)
-                _players = (await _playersService.GetAll()).ToList();
-            return _players;
+            return _players ?? (_players = (await _playersService.GetAll()).ToList());
         }
         public IList<Player> GetPlayersFromFile()
         {
@@ -88,7 +86,9 @@ namespace ReadMLB2020
                 }
                 file.Close();
             }
-                   
+            //reset cached players since we added some new ones
+            if (countNewPlayers > 0)
+                _players = null;
             Console.WriteLine("Players added to DB: {0}", countNewPlayers);
         }
 
