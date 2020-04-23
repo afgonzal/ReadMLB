@@ -89,12 +89,13 @@ namespace ReadMLB2020
                 Console.SetOut(_outputWriter);
             }
 
-            var rp = new ReadPlayers(_configuration, _playersService);
+            var rp = new ReadPlayers(_configuration, _playersService, _year);
             if (_updateFiles)
                 rp.ParsePlayers();
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                await rp.AddNewPlayersToDBAsync();
+                await rp.VerifyPlayersAsync();
+                //await rp.AddNewPlayersToDBAsync();
             }
             
             var rb = new ReadBatting(_battingService, _configuration, _year,_inPO);

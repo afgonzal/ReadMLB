@@ -11,5 +11,7 @@ namespace ReadMLB.Entities
         public string LastName { get; set; }
 
         public ICollection<Batting> BattingStats { get; set; }
+
+        public short? YearCreated { get; set; }
     }
 }

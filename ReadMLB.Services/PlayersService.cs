@@ -12,6 +12,8 @@ namespace ReadMLB.Services
         Task<int> AddAsync(Player newPlayer);
 
         ValueTask<Player> GetByIdAsync(long id);
+
+        Task<int> UpdateAsync(Player player);
     }
     public class PlayersService : IPlayersService
     {
@@ -38,6 +40,12 @@ namespace ReadMLB.Services
         public async ValueTask<Player> GetByIdAsync(long id)
         {
             return await _unitOfWork.Players.GetAsync(id);
+        }
+
+        public async Task<int> UpdateAsync(Player player)
+        {
+            await _unitOfWork.Players.UpdateAsync(player);
+            return await _unitOfWork.CompleteAsync();
         }
     }
 }
