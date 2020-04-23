@@ -10,3 +10,5 @@ SELECT [Year],InPO, count(*) as Running from Running GROUP BY [Year],InPO
 
 SELECT [Year],InPO, count(*) as Defense from Defense GROUP BY [Year],InPO
 
+SELECT [Year],InPO, count(*) as Rotations from Rotations GROUP BY [Year],InPO
+
