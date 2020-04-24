@@ -12,6 +12,11 @@ namespace ReadMLB.Services
         Task<int> AddAsync(Player newPlayer);
 
         ValueTask<Player> GetByIdAsync(long id);
+
+        Task<int> UpdateAsync(Player player);
+        Task<IEnumerable<Player>> GetAll();
+
+        Task<Player> FindEAPlayerAsync(long eaId, short year);
     }
     public class PlayersService : IPlayersService
     {
@@ -23,21 +28,29 @@ namespace ReadMLB.Services
         }
         public async Task<int> AddAsync(Player newPlayer)
         {
-           
-                var player = await GetByIdAsync(newPlayer.PlayerId);
-                if (player == null)
-                {
-                    await _unitOfWork.Players.AddAsync(newPlayer);
-                    return await _unitOfWork.CompleteAsync();
-                }
-                else
-                    return -1;
-           
+                await _unitOfWork.Players.AddAsync(newPlayer);
+                return await _unitOfWork.CompleteAsync();
         }
 
         public async ValueTask<Player> GetByIdAsync(long id)
         {
             return await _unitOfWork.Players.GetAsync(id);
+        }
+
+        public async Task<int> UpdateAsync(Player player)
+        {
+            await _unitOfWork.Players.UpdateAsync(player);
+            return await _unitOfWork.CompleteAsync();
+        }
+
+        public Task<IEnumerable<Player>> GetAll()
+        {
+            return _unitOfWork.Players.FindAsync(p => !p.IsInvalid);
+        }
+
+        public Task<Player> FindEAPlayerAsync(long eaId, short year)
+        {
+            return _unitOfWork.Players.SingleOrDefaultAsync(p => p.EAId == eaId && p.Year == year);
         }
     }
 }

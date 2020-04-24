@@ -20,11 +20,13 @@ namespace ReadMLB2020
         private readonly FindPlayer _findPlayer;
         private StreamWriter _outputWriter;
         private FileStream _outputStream;
-        private readonly bool _inPO;
+        private bool _inPO;
         private readonly IRunningStatsService _runningService;
         private readonly IDefenseStatsService _defenseService;
+        private short _year;
+        private readonly IRotationsService _rotationsService;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService, IRotationsService rotationsService)
         {
             _configuration = configuration;
             _teamsService = teamsService;
@@ -41,79 +43,112 @@ namespace ReadMLB2020
             _inPO = Convert.ToBoolean(_configuration["inPO"]);
             _runningService = runningService;
             _defenseService = defenseService;
+            _rotationsService = rotationsService;
         }
         public async Task RunAsync(string[] args)
         {
             Console.WriteLine("ReadMLB 2020 - Alejandro González intuido@yahoo.com");
+           
+
+            #region Read arguments and configuration
+            
+            var sourceFiles = _configuration["SourceFolder"];
+            if (args.Length > 0)
+            {
+                _year = Convert.ToInt16(args[0]);
+                if (_year < 2004 || _year > 2100)
+                    throw new ArgumentException("Year must be btw 2004 and 2100");
+            }
+            else
+            {
+                _year = Convert.ToInt16(_configuration["Year"]);
+            }
+
+            if (args.Length > 1)
+            {
+                bool inPO;
+                if (!bool.TryParse(args[1], out inPO))
+                    throw new ArgumentException("InPO must be false or true.");
+            }
+            else
+            {
+                _inPO = Convert.ToBoolean(_configuration["InPO"]);
+            }
+
+            var sourceFile = Path.Combine(_configuration["SourceFolder"], $"{_year}{(_inPO ? 'P' : 'R')}.txt");
+            if (!File.Exists(sourceFile))
+                throw new ArgumentException("Source file not found.");
+
+            var teamId = Convert.ToByte(_configuration["CurrentTeamId"]);
+            if (teamId > 95)
+                throw new ArgumentException($"Invalid current team {teamId}");
+            var team = _teamsService.GetTeamByIdAsync(teamId).Result;
+            #endregion
+            Console.WriteLine("\n Source files {0}", sourceFiles);
+            Console.WriteLine("Import franchise year {0}", _year);
+            Console.WriteLine("Current team {0}", team.TeamName);
+
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))
             {
                 Console.SetOut(_outputWriter);
             }
 
-            #region Read arguments and configuration
-            
-            var sourceFiles = _configuration["SourceFolder"];            
-            var year = Convert.ToInt16(args[0]);
-            if (year < 2004 || year > 2100)
-                throw new ArgumentException("Year must be btw 2004 and 2100");
-            var teamId = Convert.ToByte(_configuration["CurrentTeamId"]);
-            if (teamId < 0 || teamId > 95)
-                throw new ArgumentException($"Invalid current team {teamId}");
-            var team = _teamsService.GetTeamByIdAsync(teamId).Result;
-            #endregion
-            Console.WriteLine("\n Source files {0}", sourceFiles);
-            Console.WriteLine("Import franchise year {0}", year);
-            Console.WriteLine("Current team {0}", team.TeamName);
-
-            
-            var rp = new ReadPlayers(_configuration, _playersService);
+            var rp = new ReadPlayers(_configuration, _playersService, _year, sourceFile);
             if (_updateFiles)
                 rp.ParsePlayers();
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
             {
-                await rp.AddNewPlayersToDBAsync();
+                await rp.AddNewPlayersToDbAsync();
             }
             
-            var rb = new ReadBatting(_battingService, _configuration, year,_inPO);
+            var rb = new ReadBatting(_battingService, _findPlayer, _configuration, _year,_inPO, sourceFile);
             if (_updateFiles)
                 rb.ParseBatting();
             //Batting is required for all others
             if (Convert.ToBoolean(_configuration["UpdateBatting"]))
             {                
-                 await rb.UpdateBattingStatsAsync(rp.GetPlayers());
+                 await rb.UpdateBattingStatsAsync(await rp.GetPlayersAsync());;
             }
 
 
-            var rRoster = new ReadRoster(_configuration, year, _findPlayer, _battingService, _rostersService, _inPO);
+            var rRoster = new ReadRoster(_configuration, _year, _findPlayer, _rostersService, _rotationsService, _inPO, sourceFile);
             if (_updateFiles)
+            {
                 rRoster.ParseRoster();
+                rRoster.ParseRotation();
+            }
             if (Convert.ToBoolean(_configuration["UpdateRosters"]))
             {
                 //await rRoster.ValidatePlayersAsync(rp.GetPlayers());
                 var teams = await _teamsService.GetTeamsAsync();
-                await rRoster.ReadRostersAsync(rp.GetPlayers(), teams.ToList());
+                await rRoster.ReadRostersAsync(await rp.GetPlayersAsync(), teams.ToList());
+            }
+            if (Convert.ToBoolean(_configuration["UpdateRotations"]))
+            {
+                var teams = await _teamsService.GetTeamsAsync();
+                await rRoster.ReadRotationsAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
 
-            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, year, _inPO);
+            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, _year, _inPO, sourceFile);
             if (_updateFiles)
                 rPitch.ParsePitching();
             if (Convert.ToBoolean(_configuration["UpdatePitching"]))
             {
                 var teams = await _teamsService.GetTeamsAsync();
-                await rPitch.UpdatePitchingStatsAsync(rp.GetPlayers(), teams.ToList());
+                await rPitch.UpdatePitchingStatsAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
 
 
             if (Convert.ToBoolean(_configuration["UpdateRunning"]))
             {
-                var rRunning = new ReadRunning(_runningService, _configuration, year, _inPO);
-                await rRunning.ReadRunningAsync();
+                var rRunning = new ReadRunning(_runningService,  _findPlayer, _configuration, _year, _inPO);
+                await rRunning.ReadRunningAsync(await rp.GetPlayersAsync());
             }
 
             if (Convert.ToBoolean(_configuration["UpdateDefense"]))
             {
-                var rDefense= new ReadDefense(_defenseService, _configuration, year, _inPO);
-                await rDefense.ReadDefenseAsync();
+                var rDefense= new ReadDefense(_defenseService, _findPlayer, _configuration, _year, _inPO);
+                await rDefense.ReadDefenseAsync(await rp.GetPlayersAsync());
             }
 
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))

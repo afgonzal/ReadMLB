@@ -10,7 +10,11 @@ namespace ReadMLB.Services
     {
         Task<IEnumerable<Team>> GetTeamsAsync();
 
-        ValueTask<Team> GetTeamByIdAsync(byte id);
+        ValueTask<Team> GetTeamByIdAsync(byte teamId);
+
+        Task<IEnumerable<Team>> GetTeamOrganizationAsync(byte teamId);
+
+        Task<IEnumerable<Team>> GetOrganizationById(byte organizationId);
     }
 
     public class TeamsService : ITeamsService
@@ -28,9 +32,30 @@ namespace ReadMLB.Services
             return teams.OrderBy(t => t.TeamId);
         }
 
-        public ValueTask<Team> GetTeamByIdAsync(byte id)
+        public async Task<IEnumerable<Team>> GetTeamOrganizationAsync(byte teamId)
         {
-            return _unitOfWork.Teams.GetAsync(id);
+            var team = await GetTeamByIdAsync(teamId);
+            if (team.OrganizationId.HasValue)
+            {
+                return await _unitOfWork.Teams.FindAsync(t => t.Organization, t =>
+                    t.OrganizationId == team.OrganizationId.Value || t.TeamId == team.OrganizationId, t => t.League);
+            }
+            else
+            {
+                return await _unitOfWork.Teams.FindAsync(t => t.Organization, t =>
+                    t.OrganizationId == team.OrganizationId.Value || t.TeamId == team.OrganizationId.Value, t => t.League);
+            }
+        }
+
+        public Task<IEnumerable<Team>> GetOrganizationById(byte organizationId)
+        {
+            return _unitOfWork.Teams.FindAsync(t => t.Organization,t =>
+                t.OrganizationId == organizationId || t.TeamId == organizationId, t => t.League);
+        }
+
+        public ValueTask<Team> GetTeamByIdAsync(byte teamId)
+        {
+            return _unitOfWork.Teams.GetAsync(teamId);
         }
     }
 }

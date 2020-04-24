@@ -11,11 +11,11 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchBrowser": false,
       "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "ancmHostingModel": "OutOfProcess"
     },
     "ReadMLB.Web.API": {
       "commandName": "Project",

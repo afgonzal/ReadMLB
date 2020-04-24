@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ReadMLB2020": {
-      "commandName": "Project",
-      "commandLineArgs": "2004"
+      "commandName": "Project"
     }
   }
 }

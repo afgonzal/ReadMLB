@@ -11,5 +11,11 @@ namespace ReadMLB.Entities
         public string LastName { get; set; }
 
         public ICollection<Batting> BattingStats { get; set; }
+
+        public short Year { get; set; }
+
+        public long EAId { get; set; }
+
+        public bool IsInvalid { get; set; }
     }
 }

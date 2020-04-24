@@ -17,6 +17,7 @@ namespace ReadMLB.DataLayer.Repositories
 
         IBattingRepository BattingStats { get; }
         IDefenseRepository DefenseStats { get; }
+        IRotationRepository Rotations { get; }
 
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
@@ -52,6 +53,10 @@ namespace ReadMLB.DataLayer.Repositories
 
         private IDefenseRepository _defenseStats;
         public IDefenseRepository DefenseStats => _defenseStats ?? (_defenseStats = new DefenseRepository(_context));
+
+        private IRotationRepository _rotations;
+        public IRotationRepository Rotations => _rotations ?? (_rotations = new RotationRepository(_context));
+
         public Task<int> CompleteAsync()
         {
             return _context.SaveChangesAsync();
