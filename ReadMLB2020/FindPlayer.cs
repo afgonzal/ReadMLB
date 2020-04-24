@@ -117,5 +117,17 @@ namespace ReadMLB2020
 
             return player;
         }
+
+        public Player FindPlayerById(IList<Player> players, long eaId, short year)
+        {
+            var foundPlayers = players.Where(p => p.EAId == eaId).ToList();
+            if (foundPlayers.Count() > 1)
+            {
+                //find the newest one, but consider that it has can't be younger than year   
+                return foundPlayers.Where(p=> p.Year<= year).OrderByDescending(p => p.Year).FirstOrDefault();
+            }
+            //there's just one
+            return foundPlayers.FirstOrDefault();
+        }
     }
 }

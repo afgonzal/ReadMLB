@@ -15,5 +15,7 @@ namespace ReadMLB.Entities
         public short Year { get; set; }
 
         public long EAId { get; set; }
+
+        public bool IsInvalid { get; set; }
     }
 }

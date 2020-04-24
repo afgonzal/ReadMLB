@@ -45,7 +45,7 @@ namespace ReadMLB.Services
 
         public Task<IEnumerable<Player>> GetAll()
         {
-            return _unitOfWork.Players.GetAllAsync();
+            return _unitOfWork.Players.FindAsync(p => !p.IsInvalid);
         }
 
         public Task<Player> FindEAPlayerAsync(long eaId, short year)
