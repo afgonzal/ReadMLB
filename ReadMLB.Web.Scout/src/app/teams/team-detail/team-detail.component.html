@@ -1,2 +1,12 @@
-<h2>{{team.TeamCity}} {{team.TeamName}}</h2>
-<img [src]="team.Logo" class="team-logo">
+<div class="col-xs-12 ml-4">
+  <div class="row">
+    <div class="col-xs-2 ml-2">
+      <h2>{{team.TeamCity}} {{team.TeamName}}</h2>
+      <h3 *ngIf="team.Org != team.TeamAbr">{{team.Org}}</h3>
+      <img [src]="team.Logo" class="team-logo" [alt]="team.TeamAbr">
+    </div>
+    <div class="col-xs-10">
+        <app-rosters></app-rosters>
+    </div>
+  </div>
+</div>

@@ -17,9 +17,9 @@ namespace ReadMLB2020
         private readonly short _year;
         private IList<Player> _players;
 
-        public ReadPlayers(IConfiguration config, IPlayersService playersService, short year)
+        public ReadPlayers(IConfiguration config, IPlayersService playersService, short year, string sourceFile)
         {
-            _playersSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
+            _playersSource = sourceFile;
             _playersTemp = Path.Combine(config["SourceFolder"], config["PlayersTempList"]);
             _playersService = playersService;
             _year = year;

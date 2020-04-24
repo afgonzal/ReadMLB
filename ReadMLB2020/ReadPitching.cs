@@ -21,14 +21,14 @@ namespace ReadMLB2020
         private FindPlayer _findPlayerHelper;
         private readonly IRostersService _rosterService;
 
-        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO)
+        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
         {
             _pitchingService = pitchingService;
             _year = year;
             _inPo = inPO;
-            _pitchingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
+            _pitchingSource = sourceFile;
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
-            _pitchingStats = Path.Combine(config["SourceFolder"], config["PitchingStats"]);
+            _pitchingStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["PitchingStats"]}");
             _findPlayerHelper = findPlayer;
             _rosterService = rostersService;
         }
@@ -96,16 +96,16 @@ namespace ReadMLB2020
                     {
                         Player player = null;
                         //var player = await _findPlayerHelper.FindPlayerByName(players, attrs[0].ExtractName(), attrs[1].ExtractName(), _year);
-                        var found = players.Where(p =>
+                        var foundByName = players.Where(p =>
                             p.FirstName == attrs[0].ExtractName() && p.LastName == attrs[1].ExtractName()).ToList();
                         
-                        if (found.Count > 1)
+                        if (foundByName.Count > 1)
                         {
                             var foundPitchers = new List<long>();
-                            foreach (var fPlayer in found)
+                            foreach (var fPlayer in foundByName)
                             {
-                                var fStats = pStats.Where(p => p.PlayerId == fPlayer.PlayerId);
-                                if (fStats.Any()) //it's a pitcher
+                                var foundInStats = pStats.Where(p => p.PlayerId == fPlayer.EAId);
+                                if (foundInStats.Any()) //it's a pitcher
                                 {
                                     foundPitchers.Add(fPlayer.PlayerId);
                                 }
@@ -113,15 +113,15 @@ namespace ReadMLB2020
 
                             if (foundPitchers.Count == 1) //that's him
                             {
-                                player = found.Single(p => p.PlayerId == foundPitchers.First());
+                                player = foundByName.Single(p => p.PlayerId == foundPitchers.First());
                             }
                             else //both are pitchers!!!
                             {
                                 var pitchersWMatchingStats = new List<long>();
                                 //compare stats 
-                                foreach (var fPlayer in found)
+                                foreach (var fPlayer in foundByName)
                                 {
-                                    foreach (var pstat in pStats.Where(p => p.PlayerId == fPlayer.PlayerId))
+                                    foreach (var pstat in pStats.Where(p => p.PlayerId == fPlayer.EAId))
                                     {
                                         if (pstat.G == Convert.ToInt16(attrs[2]) &&
                                             pstat.IP10.ToString() == attrs[3].ExtractName().Replace(".","") &&
@@ -145,7 +145,7 @@ namespace ReadMLB2020
                                 
                                 if (pitchersWMatchingStats.Count == 1) //that's him
                                 {
-                                    player = found.Single(p => p.PlayerId == foundPitchers.First());
+                                    player = foundByName.Single(p => p.PlayerId == foundPitchers.First());
                                 }
                                 else
                                 {
@@ -153,7 +153,7 @@ namespace ReadMLB2020
                                     {
                                         //Player is in the minors
                                         var matchInMinors = new List<long>();
-                                        foreach (var mPlayer in found)
+                                        foreach (var mPlayer in foundByName)
                                         {
                                             //find it in roster
                                             var roster = await _rosterService.FindByPlayerAsync(mPlayer.PlayerId, _year, _inPo);
@@ -167,7 +167,7 @@ namespace ReadMLB2020
                                         }
 
                                         if (matchInMinors.Count == 1)
-                                            player = found.Single(p => p.PlayerId == matchInMinors.First());
+                                            player = foundByName.Single(p => p.PlayerId == matchInMinors.First());
 
                                         else if (matchInMinors.Count == 0)
                                         {
@@ -190,19 +190,20 @@ namespace ReadMLB2020
                         }
                         else //good there's just one player with same name
                         {
-                            player = found.First();
+                            player = foundByName.First();
                         }
 
                         if (player != null)
                         {
                             var statsMajor =
-                                pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 0);
-                            var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 1);
-                            var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.PlayerId && s.League == 2);
+                                pStats.SingleOrDefault(s => s.PlayerId == player.EAId && s.League == 0);
+                            var statsAAA = pStats.SingleOrDefault(s => s.PlayerId == player.EAId && s.League == 1);
+                            var statsAA = pStats.SingleOrDefault(s => s.PlayerId == player.EAId && s.League == 2);
 
 
                             if (statsMajor != null && statsMajor.G > 0 && statsMajor.PitchingId ==0)
                             {
+                                statsMajor.PlayerId = player.PlayerId;
                                 statsMajor.PK = Convert.ToInt16(attrs[13]);
                                 statsMajor.TPA = Convert.ToInt16(attrs[14]);
                                 statsMajor.H1B = Convert.ToInt16(attrs[15]);
@@ -217,9 +218,16 @@ namespace ReadMLB2020
                             }
 
                             if (statsAAA != null && statsAAA.PitchingId == 0)
+                            {
+                                statsAAA.PlayerId = player.PlayerId;
                                 await _pitchingService.AddPitchingStatAsync(statsAAA);
+                            }
+
                             if (statsAA != null && statsAA.PitchingId == 0)
+                            {
+                                statsAA.PlayerId = player.PlayerId;
                                 await _pitchingService.AddPitchingStatAsync(statsAA);
+                            }
                         }
                         else
                         {

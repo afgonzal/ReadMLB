@@ -10,6 +10,7 @@ import { BatterComponent } from './batter/batter.component';
 import { PitcherComponent } from './pitcher/pitcher.component';
 import { TeamDetailComponent } from './teams/team-detail/team-detail.component';
 import { HeaderComponent } from './header/header.component';
+import { RostersComponent } from './rosters/rosters.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HeaderComponent } from './header/header.component';
     BatterComponent,
     PitcherComponent,
     TeamDetailComponent,
-    HeaderComponent
+    HeaderComponent,
+    RostersComponent
   ],
   imports: [
     BrowserModule,

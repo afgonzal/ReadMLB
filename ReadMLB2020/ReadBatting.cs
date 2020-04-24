@@ -18,16 +18,18 @@ namespace ReadMLB2020
         private readonly string _battingTemp;
         private readonly string _battingStats;
         private readonly IBattingService _battingService;
+        private readonly FindPlayer _findPlayer;
 
 
-        public ReadBatting(IBattingService battingService, IConfiguration config, short year, bool inPO)
+        public ReadBatting(IBattingService battingService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
         {
             _inPO = inPO;
             _year = year;
-            _battingSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
+            _battingSource = sourceFile;
+            _battingStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["BattingStats"]}");
             _battingTemp = Path.Combine(config["SourceFolder"], config["BattingTempStats"]);
-            _battingStats = Path.Combine(config["SourceFolder"], config["BattingStats"]);
             _battingService = battingService;
+            _findPlayer = findPlayer;
         }
 
         private List<Batting> ParseBattingTemp()
@@ -136,19 +138,7 @@ namespace ReadMLB2020
                     var attrs = line.Split(ReadHelper.Separator);
                     try
                     {
-                        Player player;
-                        var foundPlayers = players.Where(p => p.EAId == Convert.ToInt64(attrs[1]));
-                        if (foundPlayers.Count() == 1)
-                            player = foundPlayers.First();
-                        else
-                        {
-                            foundPlayers = foundPlayers.Where(p =>
-                                p.FirstName == attrs[2].ExtractName() && p.LastName == attrs[3].ExtractName());
-                            if (foundPlayers.Count() == 1)
-                                player = foundPlayers.First();
-                            else
-                                player = foundPlayers.Single(p => p.Year == _year);
-                        }
+                        var player = _findPlayer.FindPlayerById(players, Convert.ToInt64(attrs[1]), _year, attrs[2].ExtractName(), attrs[3].ExtractName());
 
                         var bstat = new Batting
                         {

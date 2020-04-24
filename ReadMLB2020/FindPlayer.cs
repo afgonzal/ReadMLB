@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Logging;
 using ReadMLB.Entities;
 using ReadMLB.Services;
 
@@ -96,6 +97,25 @@ namespace ReadMLB2020
                 return null;
             Console.WriteLine("Several pitchers with same name {0} {1}", firstName, lastName);
             return null;
+        }
+
+        public Player FindPlayerById(IList<Player> players, long eaId, short year, string firstName, string lastName)
+        {
+            Player player;
+            var foundPlayers = players.Where(p => p.EAId == eaId && p.FirstName == firstName && p.LastName == lastName).ToList();
+            if (players.Count() == 1)
+                player = players.First();
+            else
+            {
+                //filter again by name
+                foundPlayers = foundPlayers.Where(p => p.FirstName == firstName && p.LastName == lastName).ToList();
+                if (foundPlayers.Count() == 1)
+                    player = foundPlayers.First();
+                else
+                    player = foundPlayers.Single(p => p.Year == year);
+            }
+
+            return player;
         }
     }
 }

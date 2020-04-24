@@ -22,11 +22,11 @@ namespace ReadMLB2020
         private string _rotationTemp;
 
         public ReadRoster(IConfiguration config, short year, FindPlayer findPlayer, IRostersService rostersService,
-            IRotationsService rotationsService, bool inPO)
+            IRotationsService rotationsService, bool inPO, string sourceFile)
         {
             _year = year;
             _inPO = inPO;
-            _rosterSource = Path.Combine(config["SourceFolder"], config["SourceFile"]);
+            _rosterSource = sourceFile;
             _rosterTemp = Path.Combine(config["SourceFolder"], config["RostersTemp"]);
             _rotationTemp = Path.Combine(config["SourceFolder"], config["RotationsTemp"]);
             _findPlayerHelper = findPlayer;
@@ -76,17 +76,7 @@ namespace ReadMLB2020
                             InPO = _inPO
                         };
                         //Console.WriteLine("{0} {1} {2}", slot.Slot, player.FirstName, player.LastName);
-                        try
-                        {
-
-
-                            await _rostersService.AddRosterAsync(slot);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Error for {0} {1}", attrs[4].ExtractName(),
-                                attrs[5].ExtractName());
-                        }
+                        await _rostersService.AddRosterAsync(slot);
                     }
                     else
                     {

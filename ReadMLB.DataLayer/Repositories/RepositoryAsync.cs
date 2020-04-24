@@ -44,7 +44,7 @@ namespace ReadMLB.DataLayer.Repositories
             // 
             // I didn't change it because I wanted the code to look like the videos. But feel free to change
             // this on your own.
-            return await Context.Set<TEntity>().ToListAsync();
+            return await Context.Set<TEntity>().AsNoTracking().ToListAsync();
         }
 
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
@@ -100,7 +100,7 @@ namespace ReadMLB.DataLayer.Repositories
 
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
+            return Context.Set<TEntity>().AsNoTracking().SingleOrDefaultAsync(predicate);
         }
 
         public ValueTask<EntityEntry<TEntity>> AddAsync(TEntity entity)

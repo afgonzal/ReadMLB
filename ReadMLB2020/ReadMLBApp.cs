@@ -75,6 +75,10 @@ namespace ReadMLB2020
                 _inPO = Convert.ToBoolean(_configuration["InPO"]);
             }
 
+            var sourceFile = Path.Combine(_configuration["SourceFolder"], $"{_year}{(_inPO ? 'P' : 'R')}.txt");
+            if (!File.Exists(sourceFile))
+                throw new ArgumentException("Source file not found.");
+
             var teamId = Convert.ToByte(_configuration["CurrentTeamId"]);
             if (teamId > 95)
                 throw new ArgumentException($"Invalid current team {teamId}");
@@ -89,7 +93,7 @@ namespace ReadMLB2020
                 Console.SetOut(_outputWriter);
             }
 
-            var rp = new ReadPlayers(_configuration, _playersService, _year);
+            var rp = new ReadPlayers(_configuration, _playersService, _year, sourceFile);
             if (_updateFiles)
                 rp.ParsePlayers();
             if (Convert.ToBoolean(_configuration["UpdatePlayers"]))
@@ -97,7 +101,7 @@ namespace ReadMLB2020
                 await rp.AddNewPlayersToDbAsync();
             }
             
-            var rb = new ReadBatting(_battingService, _configuration, _year,_inPO);
+            var rb = new ReadBatting(_battingService, _findPlayer, _configuration, _year,_inPO, sourceFile);
             if (_updateFiles)
                 rb.ParseBatting();
             //Batting is required for all others
@@ -107,7 +111,7 @@ namespace ReadMLB2020
             }
 
 
-            var rRoster = new ReadRoster(_configuration, _year, _findPlayer, _rostersService, _rotationsService, _inPO);
+            var rRoster = new ReadRoster(_configuration, _year, _findPlayer, _rostersService, _rotationsService, _inPO, sourceFile);
             if (_updateFiles)
             {
                 rRoster.ParseRoster();
@@ -125,7 +129,7 @@ namespace ReadMLB2020
                 await rRoster.ReadRotationsAsync(await rp.GetPlayersAsync(), teams.ToList());
             }
 
-            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, _year, _inPO);
+            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, _year, _inPO, sourceFile);
             if (_updateFiles)
                 rPitch.ParsePitching();
             if (Convert.ToBoolean(_configuration["UpdatePitching"]))
@@ -137,14 +141,14 @@ namespace ReadMLB2020
 
             if (Convert.ToBoolean(_configuration["UpdateRunning"]))
             {
-                var rRunning = new ReadRunning(_runningService, _configuration, _year, _inPO);
-                await rRunning.ReadRunningAsync();
+                var rRunning = new ReadRunning(_runningService,  _findPlayer, _configuration, _year, _inPO);
+                await rRunning.ReadRunningAsync(await rp.GetPlayersAsync());
             }
 
             if (Convert.ToBoolean(_configuration["UpdateDefense"]))
             {
-                var rDefense= new ReadDefense(_defenseService, _configuration, _year, _inPO);
-                await rDefense.ReadDefenseAsync();
+                var rDefense= new ReadDefense(_defenseService, _findPlayer, _configuration, _year, _inPO);
+                await rDefense.ReadDefenseAsync(await rp.GetPlayersAsync());
             }
 
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))
