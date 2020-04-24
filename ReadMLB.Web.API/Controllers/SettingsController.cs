@@ -15,9 +15,27 @@ namespace ReadMLB.Web.API.Controllers
     [ApiController]
     public class SettingsController : ControllerBase
     {
-        public SettingsController(ITeamsService teamsService, IConfiguration config)
+        private readonly ITeamsService _teamsService;
+        private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
+
+        public SettingsController(ITeamsService teamsService, IMapper mapper, IConfiguration config)
         {
-            // return Ok(_mapper.Map<ICollection<BattingStatModel>>(result));
+            _teamsService = teamsService;
+            _config = config;
+            _mapper = mapper;
+        }
+
+        public async Task<IActionResult> GetSettings()
+        {
+            var organization = await _teamsService.GetOrganizationById(Convert.ToByte(_config["CurrentTeam"]));
+            var settings = new SettingsModel
+            {
+                InPO = Convert.ToBoolean(_config["inPO"]),
+                Year = Convert.ToInt16(_config["CurrentYear"]),
+                Teams = _mapper.Map<ICollection<TeamModel>>(organization)
+            };
+            return Ok(settings);
         }
     }
 }
