@@ -74,8 +74,22 @@ namespace ReadMLB2020
             //return null;
         }
 
+        //public async Task<Player> FindPitcherByName(IList<Player> players, string firstName, string lastName,
+        //    short year, byte teamId)
+        //{
+        //    var found = players.Where(p => p.FirstName == firstName && p.LastName == lastName).ToList();
+        //    var pitchers = new List<Player>();
+        //    foreach (var player in found)
+        //    {
+        //        var pStats = await _pitchingService.GetPlayerPitchingHistoryAsync(player.PlayerId);
+        //        if (!pStats.Any())
+        //            return null;
+                
+
+        //    }
+        //}
         public async Task<Player> FindPitcherByName(IList<Player> players, string firstName, string lastName,
-            short year, byte? teamId = null)
+            short year)
         {
             if (year <= 2004) //doesn't work for 1st year
                 return null;

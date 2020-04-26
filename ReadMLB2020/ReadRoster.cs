@@ -16,10 +16,10 @@ namespace ReadMLB2020
         private readonly bool _inPO;
         private readonly string _rosterSource;
         private readonly string _rosterTemp;
-        private FindPlayer _findPlayerHelper;
+        private readonly FindPlayer _findPlayerHelper;
         private readonly IRostersService _rostersService;
         private readonly IRotationsService _rotationsService;
-        private string _rotationTemp;
+        private readonly string _rotationTemp;
 
         public ReadRoster(IConfiguration config, short year, FindPlayer findPlayer, IRostersService rostersService,
             IRotationsService rotationsService, bool inPO, string sourceFile)
@@ -146,8 +146,11 @@ namespace ReadMLB2020
                 while ((line = await file.ReadLineAsync()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
+                    
+
+
                     var player = await _findPlayerHelper.FindPitcherByName(players, attrs[4].ExtractName(),
-                        attrs[5].ExtractName(), _year, Convert.ToByte(attrs[0]));
+                        attrs[5].ExtractName(), _year);
                     if (player == null)
                     {
                         player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
