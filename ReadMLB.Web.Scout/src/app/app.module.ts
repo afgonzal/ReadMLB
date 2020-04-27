@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AgGridModule} from 'ag-grid-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,6 +12,7 @@ import { PitcherComponent } from './pitcher/pitcher.component';
 import { TeamDetailComponent } from './teams/team-detail/team-detail.component';
 import { HeaderComponent } from './header/header.component';
 import { RostersComponent } from './rosters/rosters.component';
+import { RosterListComponent } from './rosters/roster-list/roster-list.component';
 
 @NgModule({
   declarations: [
@@ -21,12 +23,14 @@ import { RostersComponent } from './rosters/rosters.component';
     PitcherComponent,
     TeamDetailComponent,
     HeaderComponent,
-    RostersComponent
+    RostersComponent,
+    RosterListComponent
   ],
   imports: [
     BrowserModule,
     NgbModule,
-    AppRoutingModule
+    AppRoutingModule,
+    AgGridModule.withComponents(null)
   ],
   providers: [],
   bootstrap: [AppComponent]

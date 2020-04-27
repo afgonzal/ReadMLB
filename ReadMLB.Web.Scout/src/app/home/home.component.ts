@@ -6,12 +6,30 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  private currentOrganization = 'NYY';
-  aaa = 'SWB';
-  aa = 'TRE';
+  currentOrganization = {
+    teams: [
+      { teamId : 64,
+        teamAbr: 'NYY',
+        organization : 'NYY'
+      },
+      {
+        teamId: 37,
+        teamAbr: 'SWB',
+        organization : 'NYY'
+      },
+      {
+        teamId: 90,
+        teamAbr: 'Tre',
+        organization : 'NYY'
+      }]
+    };
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  getLogo(league: number): string {
+    return this.currentOrganization.teams[league].organization + '-' + this.currentOrganization.teams[league].teamAbr.toUpperCase();
+  }
 }

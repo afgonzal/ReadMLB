@@ -1,19 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-rosters',
-  templateUrl: './rosters.component.html',
-  styleUrls: ['./rosters.component.scss'],
+  selector: 'app-roster-list',
+  templateUrl: './roster-list.component.html',
+  styleUrls: ['./roster-list.component.scss']
 })
-export class RostersComponent implements OnInit {
-  constructor() {}
+export class RosterListComponent implements OnInit {
+  columnDefs = [
+    {headerName: 'Player', valueGetter: 'data.playerFirstName + \' \' + data.playerLastName' },
+    {headerName: 'Position', field: 'playerPosition'}
+  ];
+
   players = [
     {
       slot: 0,
       playerId: 1063,
       playerFirstName: 'Derek',
       playerLastName: 'Jeter',
-      playerPosition: null,
+      playerPosition: 'SS',
       playerSecondaryPosition: null
     },
     {
@@ -209,5 +213,9 @@ export class RostersComponent implements OnInit {
       playerSecondaryPosition: null
     }
   ];
-  ngOnInit(): void {}
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
 }

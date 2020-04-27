@@ -15,20 +15,20 @@
 <div class="row">
   <div class="col-sm-3 text-center">
     <h4> Organization</h4>
-    <a href="#">
-      <img class="logo-org" [src]="'assets/logos/'+ currentOrganization + '.png'"/>
+    <a [routerLink]="'/teams/' + currentOrganization.teams[0].teamId">
+      <img class="logo-org" [src]="'assets/logos/'+ getLogo(0) + '.png'"/>
     </a>
   </div>
   <div class="col-sm-3 text-center">
     <h4> AAA</h4>
-    <a href="#">
-      <img class="logo-org" [src]="'assets/logos/'+ aaa + '.png'"/>
+    <a [routerLink]="'/teams/' + currentOrganization.teams[1].teamId">
+      <img class="logo-org" [src]="'assets/logos/'+ getLogo(1) + '.png'"/>
     </a>
   </div>
   <div class="col-sm-3 text-center">
     <h4> AA</h4>
-    <a href="#">
-      <img class="logo-org" [src]="'assets/logos/'+ aa + '.png'"/>
+    <a [routerLink]="'/teams/' + currentOrganization.teams[2].teamId">
+      <img class="logo-org" [src]="'assets/logos/' + getLogo(2) + '.png'"/>
     </a>
   </div>
 </div>
