@@ -15,6 +15,7 @@ import { RostersComponent } from './rosters/rosters.component';
 import { RosterListComponent } from './rosters/roster-list/roster-list.component';
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
+import { PlayerLinkRendererComponent } from './player-link-renderer.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { PlayerDetailComponent } from './players/player-detail/player-detail.com
     RostersComponent,
     RosterListComponent,
     PlayersComponent,
-    PlayerDetailComponent
+    PlayerDetailComponent,
+    PlayerLinkRendererComponent
   ],
   imports: [
     BrowserModule,

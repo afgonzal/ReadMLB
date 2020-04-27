@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PlayerLinkRendererComponent } from 'src/app/player-link-renderer.component';
 
 @Component({
   selector: 'app-roster-list',
@@ -7,7 +8,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RosterListComponent implements OnInit {
   columnDefs = [
-    {headerName: 'Player', cellRenderer: this.playerLink },
+    {headerName: 'Player', cellRendererFramework: PlayerLinkRendererComponent,
+    cellRendererParams: { inRouterLink: '/players' }
+    },
     {headerName: 'Position', field: 'playerPosition'}
   ];
 
@@ -216,8 +219,5 @@ export class RosterListComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-  }
-  public playerLink(params): string {
-    return '<a href="/players/' + params.data.playerId + '">' + params.data.playerFirstName + ' ' + params.data.playerLastName + '</a>';
   }
 }
