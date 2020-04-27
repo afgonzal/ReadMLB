@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RosterListComponent implements OnInit {
   columnDefs = [
-    {headerName: 'Player', valueGetter: 'data.playerFirstName + \' \' + data.playerLastName' },
+    {headerName: 'Player', cellRenderer: this.playerLink },
     {headerName: 'Position', field: 'playerPosition'}
   ];
 
@@ -217,5 +217,7 @@ export class RosterListComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  public playerLink(params): string {
+    return '<a href="/players/' + params.data.playerId + '">' + params.data.playerFirstName + ' ' + params.data.playerLastName + '</a>';
+  }
 }
