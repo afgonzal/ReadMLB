@@ -17,6 +17,7 @@ namespace ReadMLB.Services
         Task<IEnumerable<Player>> GetAll();
 
         Task<Player> FindEAPlayerAsync(long eaId, short year);
+        Task<int> UpdatePlayerAttributesAsync(Player player);
     }
     public class PlayersService : IPlayersService
     {
@@ -51,6 +52,12 @@ namespace ReadMLB.Services
         public Task<Player> FindEAPlayerAsync(long eaId, short year)
         {
             return _unitOfWork.Players.SingleOrDefaultAsync(p => p.EAId == eaId && p.Year == year);
+        }
+
+        public async Task<int> UpdatePlayerAttributesAsync(Player player)
+        {
+            await _unitOfWork.Players.UpdateAsync(player, new string[] {"Shirt", "PrimaryPosition", "SecondaryPosition", "Bats", "Throws"});
+            return await _unitOfWork.CompleteAsync();
         }
     }
 }

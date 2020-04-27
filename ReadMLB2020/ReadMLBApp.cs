@@ -151,6 +151,12 @@ namespace ReadMLB2020
                 await rDefense.ReadDefenseAsync(await rp.GetPlayersAsync());
             }
 
+            if (Convert.ToBoolean(_configuration["UpdatePositions"]))
+            {
+                var rPositions = new ReadPlayerPositions(_playersService, _teamsService, _rostersService, _configuration, _year, _inPO);
+                await rPositions.ParseRosterForPlayersAttrssAsync();
+            }
+
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))
             {
                 _outputWriter.Close();
