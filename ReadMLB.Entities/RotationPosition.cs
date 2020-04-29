@@ -13,5 +13,12 @@ namespace ReadMLB.Entities
         public byte Slot { get; set; }
         public long PlayerId { get; set; }
         public Player Player { get; set; }
+
+        public PitcherAssignment PitcherAssignment { get; set; }
+    }
+
+    public enum PitcherAssignment
+    {
+        Rotation, LongRelief, MiddleRelief, Setup, Closer
     }
 }

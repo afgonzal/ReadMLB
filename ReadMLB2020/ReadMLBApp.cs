@@ -115,7 +115,7 @@ namespace ReadMLB2020
             if (_updateFiles)
             {
                 rRoster.ParseRoster();
-                rRoster.ParseRotation();
+                //rRoster.ParseRotation();
             }
             if (Convert.ToBoolean(_configuration["UpdateRosters"]))
             {
@@ -125,11 +125,12 @@ namespace ReadMLB2020
             }
             if (Convert.ToBoolean(_configuration["UpdateRotations"]))
             {
-                var teams = await _teamsService.GetTeamsAsync();
-                await rRoster.ReadRotationsAsync(await rp.GetPlayersAsync(), teams.ToList());
+                var teams = (await _teamsService.GetTeamsAsync()).ToList();
+                //await rRoster.ReadRotationsAsync(await rp.GetPlayersAsync(), teams);
+                await rRoster.ReadPitcherAssignmentAsync(teams);
             }
 
-            var rPitch = new ReadPitching(_pitchingService, _rostersService, _findPlayer, _configuration, _year, _inPO, sourceFile);
+            var rPitch = new ReadPitching(_pitchingService, _findPlayer, _configuration, _year, _inPO, sourceFile);
             if (_updateFiles)
                 rPitch.ParsePitching();
             if (Convert.ToBoolean(_configuration["UpdatePitching"]))

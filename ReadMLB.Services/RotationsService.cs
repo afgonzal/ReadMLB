@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReadMLB.DataLayer.Repositories;
 using ReadMLB.Entities;
 
@@ -8,6 +9,7 @@ namespace ReadMLB.Services
     {
         Task AddRotationPositionAsync(RotationPosition newRotationPosition);
         Task CleanYearAsync(short year, bool inPO);
+        Task AddTeamRotationAsync(IEnumerable<RotationPosition> rotation);
     }
     public class RotationsService : IRotationsService
     {
@@ -26,6 +28,12 @@ namespace ReadMLB.Services
         public Task CleanYearAsync(short year, bool inPO)
         {
             return _unitOfWork.CleanYearFromTableAsync("Rotations", year, inPO);
+        }
+
+        public async Task AddTeamRotationAsync(IEnumerable<RotationPosition> rotation)
+        {
+            await _unitOfWork.Rotations.AddRangeAsync(rotation);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

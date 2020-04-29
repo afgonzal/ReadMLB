@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +48,7 @@ namespace ReadMLB2020
 
                 //get team's roster
                 var roster = (await _rostersService.GetTeamRosterAsync(team.TeamId, _year, _inPO)).ToList();
+
                 foreach (var row in rosterTable.SelectNodes("./tr").Skip(2))
                 {
                     var players = roster.Where(p =>
