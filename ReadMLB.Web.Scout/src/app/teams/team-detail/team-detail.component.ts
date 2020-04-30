@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-team-detail',
@@ -7,12 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TeamDetailComponent implements OnInit {
 
-  constructor() { }
+  constructor(private route: ActivatedRoute) { }
+  teamId: number  = this.route.snapshot.params.id;
   team;
 
   ngOnInit(): void {
-    this.team = {TeamCity: 'New York', TeamName: 'Yankees', TeamAbr: 'NYY', Org: 'NYY'};
-    this.team.Logo = 'assets/logos/' + this.team.Org + '-' + this.team.TeamAbr + '.png';
+    console.log(this.teamId);
+    this.team = {TeamCity: 'New York', TeamName: 'Yankees', TeamAbr: 'NYY', Organization: 'NYY'};
+    this.team.Logo = this.team.Organization + '-' + this.team.TeamAbr;
   }
 
 }

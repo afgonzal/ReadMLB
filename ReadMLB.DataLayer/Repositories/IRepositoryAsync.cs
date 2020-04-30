@@ -22,7 +22,7 @@ namespace ReadMLB.DataLayer.Repositories
         ValueTask<EntityEntry<TEntity>> AddAsync(TEntity entity);
 
         Task UpdateAsync(TEntity entity);
-
+        Task UpdateAsync(TEntity entity, IEnumerable<string> updatedProperties);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
 
         Task RemoveAsync(int id);

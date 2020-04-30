@@ -3,7 +3,6 @@ using ReadMLB.Entities;
 using ReadMLB.Services;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +17,9 @@ namespace ReadMLB2020
         private readonly string _pitchingSource;
         private readonly string _pitchingTemp;
         private readonly string _pitchingStats;
-        private FindPlayer _findPlayerHelper;
-        private readonly IRostersService _rosterService;
+        private readonly FindPlayer _findPlayerHelper;
 
-        public ReadPitching(IPitchingService pitchingService, IRostersService rostersService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
+        public ReadPitching(IPitchingService pitchingService,  FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
         {
             _pitchingService = pitchingService;
             _year = year;
@@ -30,7 +28,6 @@ namespace ReadMLB2020
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
             _pitchingStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["PitchingStats"]}");
             _findPlayerHelper = findPlayer;
-            _rosterService = rostersService;
         }
 
         internal void ParsePitching()

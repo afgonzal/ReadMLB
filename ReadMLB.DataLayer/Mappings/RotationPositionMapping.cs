@@ -11,6 +11,7 @@ namespace ReadMLB.DataLayer.Mappings
             builder.HasKey(e => new { e.TeamId, e.League, e.Year, e.InPO, e.Slot });
             builder.ToTable("Rotations");
             builder.HasOne(e => e.Player);
+            builder.Property(e => e.PitcherAssignment).HasConversion(v => (byte)v, v => (PitcherAssignment)v);
 
         }
     }

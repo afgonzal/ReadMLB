@@ -114,6 +114,16 @@ namespace ReadMLB.DataLayer.Repositories
             return Task.CompletedTask;
         }
 
+        public virtual Task UpdateAsync(TEntity entity, IEnumerable<string> updatedProperties)
+        {
+            Context.Set<TEntity>().Attach(entity);
+            foreach (var property in updatedProperties)
+            {
+                Context.Entry(entity).Property(property).IsModified = true;
+            }
+            return Task.CompletedTask;
+        }
+
         public Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
             return Context.Set<TEntity>().AddRangeAsync(entities);

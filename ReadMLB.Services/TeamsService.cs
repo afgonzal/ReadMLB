@@ -28,7 +28,7 @@ namespace ReadMLB.Services
 
         public async Task<IEnumerable<Team>> GetTeamsAsync()
         {
-            var teams = await _unitOfWork.Teams.GetAllAsync();
+            var teams = await _unitOfWork.Teams.FindAsync(t=>t.League.HasValue);
             return teams.OrderBy(t => t.TeamId);
         }
 

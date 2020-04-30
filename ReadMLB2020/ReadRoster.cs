@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using ReadMLB.Entities;
 using ReadMLB.Services;
@@ -16,10 +16,11 @@ namespace ReadMLB2020
         private readonly bool _inPO;
         private readonly string _rosterSource;
         private readonly string _rosterTemp;
-        private FindPlayer _findPlayerHelper;
+        private readonly FindPlayer _findPlayerHelper;
         private readonly IRostersService _rostersService;
         private readonly IRotationsService _rotationsService;
-        private string _rotationTemp;
+        private readonly string _htmlSource;
+        private readonly string _rotationTemp;
 
         public ReadRoster(IConfiguration config, short year, FindPlayer findPlayer, IRostersService rostersService,
             IRotationsService rotationsService, bool inPO, string sourceFile)
@@ -32,6 +33,7 @@ namespace ReadMLB2020
             _findPlayerHelper = findPlayer;
             _rostersService = rostersService;
             _rotationsService = rotationsService;
+            _htmlSource = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}.html");
         }
 
         internal void ParseRoster()
@@ -60,7 +62,7 @@ namespace ReadMLB2020
                 while ((line = await file.ReadLineAsync()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
-                    var player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
+                     var player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
                         attrs[5].ExtractName(),
                         _year, Convert.ToByte(attrs[0]));
                     if (player != null)
@@ -134,8 +136,8 @@ namespace ReadMLB2020
                 Console.WriteLine("Wrong: {0} {1} - {2}/{3}", pos.FirstName, pos.LastName, pos.TeamId, pos.Slot);
             }
         }
-
-
+        
+        [Obsolete("Rotation is loaded by rotation assignemtns")]
         public async Task ReadRotationsAsync(IList<Player> players, IList<Team> teams)
         {
             await _rotationsService.CleanYearAsync(_year, _inPO);
@@ -146,8 +148,11 @@ namespace ReadMLB2020
                 while ((line = await file.ReadLineAsync()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
+                    
+
+
                     var player = await _findPlayerHelper.FindPitcherByName(players, attrs[4].ExtractName(),
-                        attrs[5].ExtractName(), _year, Convert.ToByte(attrs[0]));
+                        attrs[5].ExtractName(), _year);
                     if (player == null)
                     {
                         player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
@@ -160,8 +165,13 @@ namespace ReadMLB2020
                         var team = teams.Single(t => t.TeamId == Convert.ToByte(attrs[0]));
                         await _rotationsService.AddRotationPositionAsync(new RotationPosition
                         {
-                            TeamId = team.TeamId, InPO = _inPO, Year = _year, PlayerId = player.PlayerId,
-                            League = team.League.GetValueOrDefault(), Slot = Convert.ToByte(attrs[3])
+                            TeamId = team.TeamId, 
+                            InPO = _inPO, 
+                            Year = _year, 
+                            PlayerId = player.PlayerId,
+                            League = team.League.GetValueOrDefault(),
+                            Slot = Convert.ToByte(attrs[3]),
+                            PitcherAssignment = PitcherAssignment.Rotation
                         });
                     }
                     else
@@ -171,6 +181,79 @@ namespace ReadMLB2020
                 }
             }
             Console.WriteLine("Finished Rotations");
+        }
+
+        public async Task ReadPitcherAssignmentAsync(IList<Team> teams)
+        {
+            Console.WriteLine("Updating Pitching assignment");
+            await _rotationsService.CleanYearAsync(_year, _inPO);
+            var html = new HtmlDocument();
+            html.Load(_htmlSource);
+
+            foreach (var team in teams)
+            {
+                //anchor with teamId is below a b, then there's a br, then a text? then something, then the table
+                var paTable = html.DocumentNode.SelectSingleNode($"//b/a[@name='t{team.TeamId}']").ParentNode
+                    .NextSibling
+                    .NextSibling.NextSibling.NextSibling.NextSibling.NextSibling.NextSibling.NextSibling.NextSibling;
+                //validate is the roster
+                if (paTable.FirstChild.FirstChild.InnerHtml != "Pitching Assignments")
+                    throw new FormatException("Pitching Assignments table not found, or found wrong table.");
+                //get team's roster
+                var roster = (await _rostersService.GetTeamRosterAsync(team.TeamId, _year, _inPO)).ToList();
+
+                var row = paTable.SelectNodes("./tr").Skip(2).First();
+                var assignments = row.SelectNodes("./td/small");
+                var rotation = new List<RotationPosition>();
+                byte slot = 0;
+
+                //Closer = 5, Rotation = 0
+                for (int paIndex = 0; paIndex < 5  ; paIndex++)
+                {
+                    var pitchers = assignments[paIndex].InnerHtml.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var pitcher in pitchers)
+                    {
+                        var names = pitcher.Replace("<br>", "").Split(',');
+                        var players = roster.Where(p =>
+                            p.Player.FirstName == names[1].TrimStart() &&
+                            p.Player.LastName == names[0]);
+
+                        if (players.Count() != 1)
+                            Console.WriteLine("Player not found {0} {1} in team {2}",
+                                names[1],names[0], team.TeamId);
+                        else
+                        {
+                            var player = players.Single().Player;
+                            if (rotation.All(p => p.PlayerId != player.PlayerId))
+                            {
+                                //Console.WriteLine("Pitcher {0} slot {1} {2} {3}", (PitcherAssignment)paIndex, slot, names[1], names[0]);
+                                try
+                                {
+                                    var pa = new RotationPosition
+                                    {
+                                        TeamId = team.TeamId,
+                                        Year = _year,
+                                        League = team.League.GetValueOrDefault(),
+                                        InPO = _inPO,
+                                        PlayerId = player.PlayerId,
+                                        PitcherAssignment = (PitcherAssignment) paIndex,
+                                        Slot = slot++
+                                    };
+                                    rotation.Add(pa);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine("Error");
+                                }
+                            }
+                        }
+                    }
+
+                }
+                await _rotationsService.AddTeamRotationAsync(rotation);
+            }
+
+            Console.WriteLine("Pitching assignment finished");
         }
     }
 }
