@@ -62,7 +62,7 @@ namespace ReadMLB2020
                 while ((line = await file.ReadLineAsync()) != null)
                 {
                     var attrs = line.Split(ReadHelper.Separator);
-                    var player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
+                     var player = await _findPlayerHelper.FindPlayerByName(players, attrs[4].ExtractName(),
                         attrs[5].ExtractName(),
                         _year, Convert.ToByte(attrs[0]));
                     if (player != null)
@@ -136,8 +136,8 @@ namespace ReadMLB2020
                 Console.WriteLine("Wrong: {0} {1} - {2}/{3}", pos.FirstName, pos.LastName, pos.TeamId, pos.Slot);
             }
         }
-
-
+        
+        [Obsolete("Rotation is loaded by rotation assignemtns")]
         public async Task ReadRotationsAsync(IList<Player> players, IList<Team> teams)
         {
             await _rotationsService.CleanYearAsync(_year, _inPO);

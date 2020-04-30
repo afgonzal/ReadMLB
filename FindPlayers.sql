@@ -1,7 +1,7 @@
 DECLARE @f varchar(50)
 DECLARE @l varchar(50)
-SET @f = 'Carlos'
-SET @l = 'Martinez'
+SET @f = 'Chris'
+SET @l = 'Young'
 SELECT * FROM Players WHERE FirstName = @f AND LastName = @l
 
 SELECT * FROM Rosters R
@@ -11,6 +11,8 @@ WHERE PlayerId IN (SELECT PlayerId FROM Players WHERE FirstName = @f AND LastNam
 SELECT * FROM Batting  WHERE PlayerId IN (SELECT PlayerId FROM Players WHERE FirstName = @f AND LastName = @l) ORDER BY PlayerId
 
 SELECT * FROM Pitching WHERE PlayerId IN (SELECT PlayerId FROM Players WHERE FirstName = @f AND LastName = @l)
+
+
 
 /*
 UPDATE Players SET IsInvalid = 1

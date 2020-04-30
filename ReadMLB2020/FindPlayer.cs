@@ -40,37 +40,28 @@ namespace ReadMLB2020
             if (found.Count == 1)
                 return found.First();
 
-            //Console.WriteLine("Duplicate player found {0} {1}", firstName, lastName);
             ////there are several with same name, what to do?
-            Player validPlayer = null;
-            
             foreach (var player in found)
             {
                 var battingStats = await _battingService.GetPlayerBattingStatsAsync(player.PlayerId, year);
+                //stats for same team means he is same guy
                 if (teamId.HasValue && battingStats.Any(bs => bs.TeamId == teamId))
                 {
                     return player;
                 }
 
-                if (battingStats.Any()) //found stats means the id is the valid one
+                var pitchingStats = await _pitchingService.GetPlayerPitchingStatsAsync(player.PlayerId, year);
+                //stats for same team means he is that guy
+                if (teamId.HasValue && pitchingStats.Any(ps => ps.TeamId == teamId))
                 {
-                    if (validPlayer == null)
-                        validPlayer = player;
-                    else //already found one!
-                    {
-                        Console.WriteLine("Multiple stats for player {0} {1}, {2} and {3}", firstName, lastName,
-                            validPlayer.PlayerId, player.PlayerId);
-                        return null;
-                    }
+                    return player;
                 }
             }
-            if (validPlayer != null)
-            {
-                return validPlayer;
-            }
+
             //just take the first one
+            Console.WriteLine("Not found valid data for player {0} {1}", firstName, lastName);
             return players.First();
-            //Console.WriteLine("Not found valid data for player {0} {1}", firstName, lastName);
+            
             //return null;
         }
 
