@@ -18,6 +18,8 @@ namespace ReadMLB.DataLayer.Repositories
         IBattingRepository BattingStats { get; }
         IDefenseRepository DefenseStats { get; }
         IRotationRepository Rotations { get; }
+        IScheduleRepository Schedule { get; }
+
 
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
@@ -56,6 +58,9 @@ namespace ReadMLB.DataLayer.Repositories
 
         private IRotationRepository _rotations;
         public IRotationRepository Rotations => _rotations ?? (_rotations = new RotationRepository(_context));
+
+        private IScheduleRepository _schedule;
+        public IScheduleRepository Schedule => _schedule ?? (_schedule = new ScheduleRepository(_context));
 
         public Task<int> CompleteAsync()
         {
