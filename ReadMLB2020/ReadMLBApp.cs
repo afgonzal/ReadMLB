@@ -25,8 +25,10 @@ namespace ReadMLB2020
         private readonly IDefenseStatsService _defenseService;
         private short _year;
         private readonly IRotationsService _rotationsService;
+        private readonly IScheduleService _scheduleService;
 
-        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService, IRotationsService rotationsService)
+        public ReadMLBApp(IConfiguration configuration, ITeamsService teamsService, IPlayersService playersService, IBattingService battingService, IPitchingService pitchingService, FindPlayer findPlayer, IRostersService rostersService, IRunningStatsService runningService, IDefenseStatsService defenseService, 
+            IRotationsService rotationsService, IScheduleService scheduleService)
         {
             _configuration = configuration;
             _teamsService = teamsService;
@@ -44,6 +46,7 @@ namespace ReadMLB2020
             _runningService = runningService;
             _defenseService = defenseService;
             _rotationsService = rotationsService;
+            _scheduleService = scheduleService;
         }
         public async Task RunAsync(string[] args)
         {
@@ -158,6 +161,25 @@ namespace ReadMLB2020
             {
                 var rPositions = new ReadPlayerPositions(_playersService, _teamsService, _rostersService, _configuration, _year, _inPO);
                 await rPositions.ParseRosterForPlayersAttrssAsync();
+            }
+
+
+            var rSchedule = new ReadSchedule(_teamsService, _scheduleService, _configuration, _year, _inPO, sourceFile);
+            if (_updateFiles)
+                rSchedule.ParseSchedule();
+            if (Convert.ToBoolean(_configuration["UpdateSchedule"]))
+            {
+                await rSchedule.CleanScheduleAsync();
+                var rScheduleAAA = new ReadSchedule(_teamsService, _scheduleService, _configuration, _year, _inPO, sourceFile);
+                var rScheduleAA = new ReadSchedule(_teamsService, _scheduleService, _configuration, _year, _inPO, sourceFile);
+                Task.WaitAll(new Task[]
+                    {
+                        rSchedule.UpdateScheduleAsync(0), rScheduleAAA.UpdateScheduleAsync(1),
+                        rScheduleAA.UpdateScheduleAsync(2)
+                    });
+                    await rSchedule.WriteToDbAsync();
+                    await rScheduleAAA.WriteToDbAsync();
+                    await rScheduleAA.WriteToDbAsync();
             }
 
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))

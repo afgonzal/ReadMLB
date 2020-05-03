@@ -18,10 +18,15 @@ namespace ReadMLB.DataLayer.Repositories
         IBattingRepository BattingStats { get; }
         IDefenseRepository DefenseStats { get; }
         IRotationRepository Rotations { get; }
+        IScheduleRepository Schedule { get; }
+
 
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
         Task CleanYearFromTableAsync(string tableName, short year, bool inPO);
+        void DisableTracking();
+        void EnableTracking();
+
     }
 
     public class UnitOfWork : IUnitOfWork
@@ -57,6 +62,9 @@ namespace ReadMLB.DataLayer.Repositories
         private IRotationRepository _rotations;
         public IRotationRepository Rotations => _rotations ?? (_rotations = new RotationRepository(_context));
 
+        private IScheduleRepository _schedule;
+        public IScheduleRepository Schedule => _schedule ?? (_schedule = new ScheduleRepository(_context));
+
         public Task<int> CompleteAsync()
         {
             return _context.SaveChangesAsync();
@@ -75,6 +83,16 @@ namespace ReadMLB.DataLayer.Repositories
         public Task CleanYearFromTableAsync(string tableName, short year, bool inPO)
         {
             return _context.Database.ExecuteSqlRawAsync(sql: $"DELETE FROM {tableName} WHERE Year = {year} AND InPO = {(inPO ? 1 : 0)}");
+        }
+
+        public void DisableTracking()
+        {
+            _context.ChangeTracker.AutoDetectChangesEnabled = false;
+        }
+
+        public void EnableTracking()
+        {
+            _context.ChangeTracker.AutoDetectChangesEnabled = true;
         }
     }
 }

@@ -17,7 +17,6 @@ namespace ReadMLB2020
 
             // Kick off our actual code
             serviceProvider.GetService<ReadMLBApp>().RunAsync(args).Wait();
-
            
         }
 

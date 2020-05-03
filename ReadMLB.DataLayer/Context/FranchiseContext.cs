@@ -28,6 +28,7 @@ namespace ReadMLB.DataLayer.Context
 
         public DbSet<Defense> DefenseStats { get; set; }
         public DbSet<RotationPosition> Rotations { get; set; }
+        public DbSet<MatchResult> Schedule { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,7 +41,7 @@ namespace ReadMLB.DataLayer.Context
             modelBuilder.ApplyConfiguration(new RunningMapping());
             modelBuilder.ApplyConfiguration(new DefenseMapping());
             modelBuilder.ApplyConfiguration(new RotationPositionMapping());
-
+            modelBuilder.ApplyConfiguration(new MatchResultMapping());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
