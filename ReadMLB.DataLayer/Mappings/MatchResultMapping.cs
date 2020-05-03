@@ -10,8 +10,8 @@ namespace ReadMLB.DataLayer.Mappings
         {
             builder.HasKey(e => e.MatchId);
             builder.Property(e => e.MatchId).ValueGeneratedOnAdd();
-            builder.ToTable("Schedule");
-
+            builder.ToTable("Matches");
+            builder.Property(e => e.DateTime).HasColumnName("Date");
             builder.Property(e => e.HomeTeamId).IsRequired();
             builder.Property(e => e.AwayTeamId).IsRequired();
         }

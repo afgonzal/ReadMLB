@@ -13,6 +13,6 @@ namespace ReadMLB.Entities
         public byte HomeScore{ get; set; }
         public byte AwayScore { get; set; }
         public DateTime DateTime { get; set; }
-
+        public byte League { get; set; }
     }
 }

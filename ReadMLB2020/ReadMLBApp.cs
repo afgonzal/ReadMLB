@@ -169,7 +169,17 @@ namespace ReadMLB2020
                 rSchedule.ParseSchedule();
             if (Convert.ToBoolean(_configuration["UpdateSchedule"]))
             {
-                await rSchedule.UpdateScheduleAsync(0);
+                await rSchedule.CleanScheduleAsync();
+                var rScheduleAAA = new ReadSchedule(_teamsService, _scheduleService, _configuration, _year, _inPO, sourceFile);
+                var rScheduleAA = new ReadSchedule(_teamsService, _scheduleService, _configuration, _year, _inPO, sourceFile);
+                Task.WaitAll(new Task[]
+                    {
+                        rSchedule.UpdateScheduleAsync(0), rScheduleAAA.UpdateScheduleAsync(1),
+                        rScheduleAA.UpdateScheduleAsync(2)
+                    });
+                    await rSchedule.WriteToDbAsync();
+                    await rScheduleAAA.WriteToDbAsync();
+                    await rScheduleAA.WriteToDbAsync();
             }
 
             if (Convert.ToBoolean(_configuration["RedirectToFile"]))
