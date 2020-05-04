@@ -82,7 +82,7 @@ namespace ReadMLB2020
         public async Task<Player> FindPitcherByName(IList<Player> players, string firstName, string lastName,
             short year)
         {
-            if (year <= 2004) //doesn't work for 1st year
+            if (year <= 2008) //doesn't work for 1st year
                 return null;
             var found = players.Where(p =>
                 p.FirstName == firstName &&

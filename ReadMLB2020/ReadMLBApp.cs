@@ -59,8 +59,8 @@ namespace ReadMLB2020
             if (args.Length > 0)
             {
                 _year = Convert.ToInt16(args[0]);
-                if (_year < 2004 || _year > 2100)
-                    throw new ArgumentException("Year must be btw 2004 and 2100");
+                if (_year < 2008 || _year > 2100)
+                    throw new ArgumentException("Year must be btw 2008 and 2100");
             }
             else
             {

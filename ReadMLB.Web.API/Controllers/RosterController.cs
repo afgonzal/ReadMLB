@@ -23,7 +23,7 @@ namespace ReadMLB.Web.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{teamId:int:max(101)}/{year:int:min(2004):max(2050)}/{inPO:bool}")]
+        [HttpGet("{teamId:int:max(101)}/{year:int:min(2008):max(2050)}/{inPO:bool}")]
         public async Task<IActionResult> GetTeamRoster(byte teamId, short year, bool inPO)
         {
             var roster = await _rosterService.GetTeamRosterAsync(teamId, year, inPO);

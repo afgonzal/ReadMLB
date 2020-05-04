@@ -9,10 +9,14 @@ namespace ReadMLB.Web.API.Model
     {
         public byte Slot { get; set; }
         public long PlayerId { get; set; }
-        public string PlayerFirstName { get; set; }
-        public string PlayerLastName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public byte? Shirt { get; set; }
 
-        public string PlayerPosition { get; set; }
-        public string PlayerSecondaryPosition { get; set; }
+        public string PrimaryPosition { get; set; }
+        public string SecondaryPosition { get; set; }
+
+        public string Bats { get; set; }
+        public string Throws { get; set; }
     }
 }

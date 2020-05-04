@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
 
 namespace ReadMLB.Entities
 {
@@ -32,16 +34,34 @@ namespace ReadMLB.Entities
                 if (attribute != null)
                 {
                     if (attribute.Description == description)
-                        return (T)field.GetValue(null);
+                        return (T) field.GetValue(null);
                 }
                 else
                 {
                     if (field.Name == description)
-                        return (T)field.GetValue(null);
+                        return (T) field.GetValue(null);
                 }
             }
+
             throw new ArgumentException("Not found.", nameof(description));
             // or return default(T);
         }
+
+        public static string ToDescription<T>(this T e) where T : Enum, IConvertible
+        {
+            var type = e.GetType();
+            var memInfo = type.GetMember(e.ToString());
+            if (memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() is
+                DescriptionAttribute descriptionAttribute)
+            {
+                return descriptionAttribute.Description;
+            }
+            else
+            {
+                return e.ToString();
+            }
+        }
+        
     }
+
 }
