@@ -14,5 +14,27 @@ namespace ReadMLB.Entities
         public byte AwayScore { get; set; }
         public DateTime DateTime { get; set; }
         public byte League { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Round} {DateTime.ToString("dd/MM/yyyy")} {HomeTeamId} vs {AwayTeamId} {HomeScore}-{AwayScore}";
+        }
+
+        public char WoL(byte teamId)
+        {
+            if (HomeTeamId == teamId)
+            {
+                if (HomeScore > AwayScore)
+                    return 'W';
+                return 'L';
+            }
+            else if (AwayTeamId == teamId)
+            {
+                if (AwayScore > HomeScore)
+                    return 'W';
+                return 'L';
+            }
+            throw new ArgumentException($"Team {teamId} not involved in match {MatchId}");
+        }
     }
 }
