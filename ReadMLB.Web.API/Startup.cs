@@ -9,6 +9,7 @@ namespace ReadMLB.Web.API
 {
     public class Startup
     {
+        private const string ScoutOrigin = "ScoutOrigin";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,7 +25,12 @@ namespace ReadMLB.Web.API
             services.AddRazorPages();
             Services.Startup.ConfigureServices(services, config);
             services.AddAutoMapper(typeof(Startup));
+            services.AddCors(c =>
+            {
+                c.AddPolicy(ScoutOrigin, options => options.WithOrigins("http://localhost:4200"));
+            });
             services.AddControllers();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +46,7 @@ namespace ReadMLB.Web.API
                 app.UseHsts();
             }
 
+            app.UseCors(ScoutOrigin);
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
