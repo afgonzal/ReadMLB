@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { SessionService } from '../session.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -6,10 +8,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-
-  constructor() { }
-
+  currentYear: number;
+  organizationName: string;
+  constructor(private session: SessionService) { }
+  sessionSubscription: Subscription;
   ngOnInit(): void {
+    this.sessionSubscription = this.session.settingsObserver.subscribe( settings => {
+      this.currentYear = settings.currentYear;
+      this.organizationName = settings.organization[0].teamAbr;
+    });
   }
 
 }

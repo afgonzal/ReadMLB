@@ -1,1 +1,25 @@
-<p>players works!</p>
+<div class="row">
+  <div class="col col-2" *ngIf="player">
+    <h2 class="text-primary">{{player.fullName()}} #{{player.shirt}}</h2>
+    <div class="col-12">
+      <p><strong>Position</strong> {{player.position()}}</p>
+      <p><strong>Bats:</strong> {{player.bats}} <strong>Throws:</strong> {{player.throws}}</p>
+      <p><strong>Team:</strong> <a [routerLink]="'/teams/' + player.team.teamId">{{player.team.cityName}} {{player.team.teamName}}</a> ({{player.team.league | leaguePipe }} )</p>
+    </div>
+  </div>
+  <div class="col col-10">
+    <div ngIf="player">
+      <ul ngbNav #batterNav="ngbNav" class="nav-tabs">
+        <li ngbNavItem>
+          <a ngbNavLink>Standard Batting</a>
+          <ng-template ngbNavContent>Standard Batting</ng-template>
+        </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Postseason Batting</a>
+          <ng-template ngbNavContent>Postseason Batting</ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="batterNav"></div>
+    </div>
+  </div>
+</div>

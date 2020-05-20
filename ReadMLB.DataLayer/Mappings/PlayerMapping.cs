@@ -18,7 +18,7 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.SecondaryPosition).HasConversion(v => (byte)v, v => (PlayerPositionAbr)v);
             builder.Property(e => e.Bats).HasConversion(v => (byte)v, v => (Bats)v);
             builder.Property(e => e.Throws).HasConversion(v => (byte)v, v => (ThrowHand)v);
-
+            builder.Ignore(e => e.Team);
         }
     }
 

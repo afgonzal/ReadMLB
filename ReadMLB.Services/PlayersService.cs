@@ -11,7 +11,7 @@ namespace ReadMLB.Services
     {
         Task<int> AddAsync(Player newPlayer);
 
-        ValueTask<Player> GetByIdAsync(long id);
+        ValueTask<Player> GetByIdAsync(long id, short year, bool inPO);
 
         Task<int> UpdateAsync(Player player);
         Task<IEnumerable<Player>> GetAll();
@@ -33,9 +33,11 @@ namespace ReadMLB.Services
                 return await _unitOfWork.CompleteAsync();
         }
 
-        public async ValueTask<Player> GetByIdAsync(long id)
+        public async ValueTask<Player> GetByIdAsync(long id, short year, bool inPO)
         {
-            return await _unitOfWork.Players.GetAsync(id);
+            var rosterPosition = await _unitOfWork.Rosters.SingleOrDefaultAsync(new List<string> {"Player", "Team"}, r => r.PlayerId == id && r.Year == year && r.InPO == inPO);
+            rosterPosition.Player.Team = rosterPosition.Team;
+            return rosterPosition.Player;
         }
 
         public async Task<int> UpdateAsync(Player player)

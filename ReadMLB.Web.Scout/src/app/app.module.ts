@@ -17,6 +17,7 @@ import { RosterListComponent } from './rosters/roster-list/roster-list.component
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { PlayerLinkRendererComponent } from './player-link-renderer.component';
+import { LeaguePipePipe } from './teams/league-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { PlayerLinkRendererComponent } from './player-link-renderer.component';
     RosterListComponent,
     PlayersComponent,
     PlayerDetailComponent,
-    PlayerLinkRendererComponent
+    PlayerLinkRendererComponent,
+    LeaguePipePipe
   ],
   imports: [
     BrowserModule,

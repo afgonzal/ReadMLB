@@ -13,7 +13,6 @@ export class TeamDetailComponent implements OnInit {
   team;
 
   ngOnInit(): void {
-    console.log(this.teamId);
     this.team = {TeamCity: 'New York', TeamName: 'Yankees', TeamAbr: 'NYY', Organization: 'NYY'};
     this.team.Logo = this.team.Organization + '-' + this.team.TeamAbr;
   }

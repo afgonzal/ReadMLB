@@ -7,6 +7,7 @@ namespace ReadMLB.Entities
     public class RosterPosition
     {
         public byte TeamId { get; set; }
+        public Team Team { get; set; }
         public byte League { get; set; }
         public short Year { get; set; }
 
