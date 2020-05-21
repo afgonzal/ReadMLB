@@ -38,9 +38,9 @@ export class BatterComponent implements OnInit {
     {headerName: 'OBP', field: 'obp' , width: 63, cellClass: 'text-right bat-cell'},
     {headerName: 'SLG', field: 'slg' , width: 60, cellClass: 'text-right bat-cell'},
     {headerName: 'OPS', field: 'ops' , width: 63, cellClass: 'text-right bat-cell'},
-    {headerName: 'XBH', field: 'xbh' , width: 60, cellClass: 'text-right bat-cell'},
+    {headerName: 'XBH', field: 'xbh' , width: 63, cellClass: 'text-right bat-cell'},
     {headerName: 'BBK', field: 'bbk' , width: 63, cellClass: 'text-right bat-cell'},
-    {headerName: 'ABHR', field: 'abhr' , width: 68, cellClass: 'text-right bat-cell'},
+    {headerName: 'ABHR', field: 'abhr' , width: 71, cellClass: 'text-right bat-cell'},
     {headerName: 'TB', field: 'tb' , width: 57, cellClass: 'text-right bat-cell'},
     {headerName: 'HBP', field: 'hbp' , width: 60, cellClass: 'text-right bat-cell'},
     {headerName: 'SH', field: 'sh' , width: 57, cellClass: 'text-right bat-cell'},
@@ -55,7 +55,7 @@ export class BatterComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(
       (params: Params) => {
-        this.playerSubscription = this.playerService.getBattingStats(+params.id, false).subscribe(response  => {
+        this.playerSubscription = this.playerService.getBattingStats(+params.id, this.inPO).subscribe(response  => {
           this.battingStats = response.filter(bs => bs.battingVs === 'Total');
         });
       }

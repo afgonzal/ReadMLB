@@ -71,10 +71,10 @@ namespace ReadMLB2020
                         LastName = attrs[3].ExtractName(),
                         Year = _year
                     };
-                    //var player = await _playersService.FindEAPlayerAsync(newPlayer.EAId, _year);
-                    Player player = null;
-                    throw new Exception("fix thispart, <year or year-1 won-t work when you have multiple years");
-                    player = players.SingleOrDefault(p => p.EAId == newPlayer.EAId && p.Year < _year);
+                    var player = await _playersService.FindEAPlayerAsync(newPlayer.EAId, _year);
+                    //Player player = null;
+                    //throw new Exception("fix this part, <year or year-1 won-t work when you have multiple years");
+                    //player = players.SingleOrDefault(p => p.EAId == newPlayer.EAId && p.Year < _year);
                     if (player == null || player.FirstName != newPlayer.FirstName || player.LastName != newPlayer.LastName)
                     {
                         var result = await _playersService.AddAsync(newPlayer);

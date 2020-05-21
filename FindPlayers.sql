@@ -1,7 +1,7 @@
 DECLARE @f varchar(50)
 DECLARE @l varchar(50)
-SET @f = 'Chris'
-SET @l = 'Young'
+SET @f = 'Greg'
+SET @l = 'Golson'
 SELECT * FROM Players WHERE FirstName = @f AND LastName = @l
 
 SELECT * FROM Rosters R

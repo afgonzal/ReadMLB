@@ -18,13 +18,14 @@ namespace ReadMLB2020
         private readonly string _pitchingTemp;
         private readonly string _pitchingStats;
         private readonly FindPlayer _findPlayerHelper;
-
-        public ReadPitching(IPitchingService pitchingService,  FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
+        private readonly TeamsHelper _teamsHelper;
+        public ReadPitching(IPitchingService pitchingService,  FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile, TeamsHelper teamsHelper)
         {
             _pitchingService = pitchingService;
             _year = year;
             _inPo = inPO;
             _pitchingSource = sourceFile;
+            _teamsHelper = teamsHelper;
             _pitchingTemp = Path.Combine(config["SourceFolder"], config["PitchingTempStats"]);
             _pitchingStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["PitchingStats"]}");
             _findPlayerHelper = findPlayer;
@@ -48,7 +49,7 @@ namespace ReadMLB2020
                     stats.Add(new Pitching
                     {
                         PlayerId = Convert.ToInt64(attrs[1]),
-                        TeamId = (attrs[2] == "-1") ? (byte)100 : Convert.ToByte(attrs[2]),
+                        TeamId = (attrs[2] == "-1") ? (byte)100 : _teamsHelper.GetActualTeam(Convert.ToByte(attrs[2]), Convert.ToByte(attrs[3])).TeamId,
                         League = Convert.ToByte(attrs[3]),
                         G = Convert.ToInt16(attrs[4]),
                         GS = Convert.ToInt16(attrs[5]),
@@ -129,7 +130,7 @@ namespace ReadMLB2020
                         var stats = new Pitching
                         {
                             PlayerId = Convert.ToInt64(attrs[1]),
-                            TeamId = (attrs[2] == "-1") ? (byte)100 : Convert.ToByte(attrs[2]),
+                            TeamId = (attrs[2] == "-1") ? (byte)100 : _teamsHelper.GetActualTeam(Convert.ToByte(attrs[2]), Convert.ToByte(attrs[3])).TeamId,
                             League = Convert.ToByte(attrs[3]),
                             G = Convert.ToInt16(attrs[4]),
                             GS = Convert.ToInt16(attrs[5]),
