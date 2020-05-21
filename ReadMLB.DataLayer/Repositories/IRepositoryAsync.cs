@@ -17,6 +17,8 @@ namespace ReadMLB.DataLayer.Repositories
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
 
+        Task<List<TEntity>> FindAsync<TInc>(Expression<Func<TEntity, TInc>> include,
+            Expression<Func<TEntity, bool>> predicate);
         Task<IEnumerable<TEntity>> FindAsync<TKey>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0);
         Task<IEnumerable<TEntity>> FindAsync<TInc, TKey>(Expression<Func<TEntity, TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0);
         Task<IEnumerable<TEntity>> FindAsync<TKey>(IEnumerable<string> includes, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0);

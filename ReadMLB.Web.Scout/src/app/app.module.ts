@@ -17,7 +17,7 @@ import { RosterListComponent } from './rosters/roster-list/roster-list.component
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { PlayerLinkRendererComponent } from './player-link-renderer.component';
-import { LeaguePipePipe } from './teams/league-pipe.pipe';
+import { LeaguePipe } from './teams/league-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -33,7 +33,7 @@ import { LeaguePipePipe } from './teams/league-pipe.pipe';
     PlayersComponent,
     PlayerDetailComponent,
     PlayerLinkRendererComponent,
-    LeaguePipePipe
+    LeaguePipe
   ],
   imports: [
     BrowserModule,
@@ -42,7 +42,7 @@ import { LeaguePipePipe } from './teams/league-pipe.pipe';
     HttpClientModule,
     AgGridModule.withComponents(null)
   ],
-  providers: [],
+  providers: [LeaguePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

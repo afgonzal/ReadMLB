@@ -20,6 +20,7 @@ namespace ReadMLB.Services
 
         Task CleanYearAsync(short year, bool inPO);
         Task<IEnumerable<Batting>> GetPlayerBattingStatsAsync(long playerId, short year, byte? league = null);
+        Task<List<Batting>> GetPlayerBattingStatsAsync(long playerId, bool inPO);
     }
     public class BattingService : IBattingService
     {
@@ -67,6 +68,11 @@ namespace ReadMLB.Services
             else
                 return _unitOfWork.BattingStats.FindAsync(b =>
                     b.PlayerId == playerId && b.Year == year);
+        }
+
+        public Task<List<Batting>> GetPlayerBattingStatsAsync(long playerId, bool inPO)
+        {
+            return _unitOfWork.BattingStats.FindAsync(b => b.Team, b => b.PlayerId == playerId && b.InPO == inPO);
         }
     }
 }

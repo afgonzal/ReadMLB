@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { PlayerModel } from './player.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators'
+import { BattingStatModel } from '../batter/battingStat.model';
 
 
 @Injectable({providedIn: 'root'})
@@ -19,7 +20,23 @@ export class PlayerService {
    }));
   }
 
-  transformPlayer(apiPlayer: PlayerModel): PlayerModel{
+  getBattingStats(playerId: number, inPO: boolean): Observable<BattingStatModel[]> {
+    return this.http.get<BattingStatModel[]>(environment.API_URL + 'batting/' + playerId, {
+      params: new HttpParams().set('inPO', inPO.toString())
+    }).pipe(map( stats => {
+      return stats.map( stat => {
+        return this.transformBattingStat(stat);
+      });
+    }));
+  }
+
+  transformPlayer(apiPlayer: PlayerModel): PlayerModel {
     return Object.assign(new PlayerModel(), apiPlayer);
   }
+
+  transformBattingStat(stat: BattingStatModel): BattingStatModel {
+    return Object.assign(new BattingStatModel(), stat);
+  }
+
+
 }

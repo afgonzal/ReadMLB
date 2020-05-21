@@ -1,15 +1,16 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using ReadMLB.Services;
 using ReadMLB.Web.API.Model;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ReadMLB.Web.API.Controllers
 {
-    [Route("api/batting")]
     [ApiController]
+    [Route("api/batting")]
     public class BattingStatsController : ControllerBase
     {
         private IBattingService _battingService;
@@ -27,14 +28,22 @@ namespace ReadMLB.Web.API.Controllers
         public async Task<IActionResult> GetCurrentTeamBatters()
         {
             var result = await _battingService.GetTeamBattersAsync(short.Parse(_configuration["CurrentYear"]), byte.Parse(_configuration["CurrentTeam"]));
-            return Ok(_mapper.Map<ICollection<BattingStatModel>>(result));
+            return Ok(_mapper.Map<ICollection<BattingAndPlayerStatModel>>(result));
         }
 
-        [HttpGet("{year:int}/{team:int}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("{year:int}/{team:int}")]
         public async Task<IActionResult> GetTeamBatters(short year, byte team)
         {
             var result = await _battingService.GetTeamBattersAsync(year, team);
-            return Ok(_mapper.Map<ICollection<BattingStatModel>>(result));
+            return Ok(_mapper.Map<ICollection<BattingAndPlayerStatModel>>(result));
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetPlayerBattingStatsAsync([FromRoute] long id, [FromQuery] bool inPO = false)
+        {
+            var result = await _battingService.GetPlayerBattingStatsAsync(id, inPO);
+
+            return Ok(_mapper.Map<ICollection<BattingStatModel>>(result.OrderBy(b => b.Year).ThenBy(b => b.BattingVs)));
         }
     }
 }

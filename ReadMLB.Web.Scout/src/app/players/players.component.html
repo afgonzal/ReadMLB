@@ -8,11 +8,11 @@
     </div>
   </div>
   <div class="col col-10">
-    <div ngIf="player">
+    <div *ngIf="player">
       <ul ngbNav #batterNav="ngbNav" class="nav-tabs">
         <li ngbNavItem>
           <a ngbNavLink>Standard Batting</a>
-          <ng-template ngbNavContent>Standard Batting</ng-template>
+          <ng-template ngbNavContent><app-batter inPO="false"></app-batter></ng-template>
         </li>
         <li ngbNavItem>
           <a ngbNavLink>Postseason Batting</a>

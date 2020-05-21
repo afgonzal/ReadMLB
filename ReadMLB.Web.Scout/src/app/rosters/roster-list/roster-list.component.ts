@@ -14,7 +14,7 @@ export class RosterListComponent implements OnInit {
     {headerName: 'Player', cellRendererFramework: PlayerLinkRendererComponent,
     cellRendererParams: { inRouterLink: '/players' }
     },
-    {headerName: 'Position', width: 100, valueGetter: function(params){
+    {headerName: 'Position', width: 100, valueGetter(params) {
       let retVal: string = params.data.primaryPosition;
       if (params.data.secondaryPosition && params.data.primaryPosition !== params.data.secondaryPosition) {
         retVal += ' / ' + params.data.secondaryPosition;

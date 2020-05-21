@@ -8,3 +8,20 @@
 .ag-theme-alpine {
   @include ag-theme-alpine();
 }
+
+.ag-theme-alpine.batting div.bat-row div.ag-cell.bat-cell {
+  padding: 10px 10px 10px 10px;
+  font-size: 11px;
+}
+
+.ag-theme-alpine.batting div.ag-header-cell {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.ag-theme-alpine.batting .ag-header-cell div.ag-header-cell-label span.ag-header-cell-text {
+  padding: 10px 10px 10px 10px;
+  font-size: 11px;
+}
+
+
