@@ -11,6 +11,7 @@ namespace ReadMLB.DataLayer.Mappings
             builder.HasKey(e => new {e.TeamId, e.League, e.Year,e.InPO, e.Slot} );
             builder.ToTable("Rosters");
             builder.HasOne(e => e.Player);
+            builder.HasOne<Team>(e => e.Team);
 
         }
     }

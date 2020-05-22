@@ -6,6 +6,7 @@ import { TeamDetailComponent } from './teams/team-detail/team-detail.component';
 import { RostersComponent } from './rosters/rosters.component';
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
+import { BatterComponent } from './batter/batter.component';
 
 
 const routes: Routes = [
@@ -14,9 +15,10 @@ const routes: Routes = [
     {path: ':id', component: TeamDetailComponent }
   ]},
   {path: 'rosters', component: RostersComponent},
-  {path: 'players', component: PlayersComponent, children: [
-    {path: ':id', component: PlayerDetailComponent}
-  ]}
+  {path: 'players/:id', component: PlayersComponent, children: [
+    {path: 'details', component: PlayerDetailComponent}
+  ]},
+  {path: 'batting/:id', component: BatterComponent}
 ];
 
 @NgModule({

@@ -1,18 +1,9 @@
 <div class="row">
   <div class="col-sm-6 offset-sm-1">
-    <h1>Read MLB 2020</h1>
-    <h3>Alejandro González - 2020</h3>
+    <h2>Dinasty - {{currentOrganization.year}} - {{currentOrganization.inPO ? 'Playoffs' : 'Regular Season'}} </h2>
   </div>
 </div>
-<div class="row text-center">
-  <div class="col-sm-3 logo-margin">
-    <img src="assets/logos/mlb.png"/>
-  </div>
-  <div class="col-sm-3">
-    <img src="assets/logos/mvp2004.jpg"/>
-  </div>
-</div>
-<div class="row">
+<div class="row" *ngIf="currentOrganization.teams.length">
   <div class="col-sm-3 text-center">
     <h4> Organization</h4>
     <a [routerLink]="'/teams/' + currentOrganization.teams[0].teamId">

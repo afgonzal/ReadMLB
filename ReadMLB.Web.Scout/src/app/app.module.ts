@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AgGridModule} from 'ag-grid-angular';
+import { HttpClientModule} from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +17,7 @@ import { RosterListComponent } from './rosters/roster-list/roster-list.component
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { PlayerLinkRendererComponent } from './player-link-renderer.component';
+import { LeaguePipe } from './teams/league-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -30,15 +32,17 @@ import { PlayerLinkRendererComponent } from './player-link-renderer.component';
     RosterListComponent,
     PlayersComponent,
     PlayerDetailComponent,
-    PlayerLinkRendererComponent
+    PlayerLinkRendererComponent,
+    LeaguePipe
   ],
   imports: [
     BrowserModule,
     NgbModule,
     AppRoutingModule,
+    HttpClientModule,
     AgGridModule.withComponents(null)
   ],
-  providers: [],
+  providers: [LeaguePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

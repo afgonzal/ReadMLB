@@ -13,3 +13,6 @@ SELECT [Year],InPO, count(*) as Defense from Defense GROUP BY [Year],InPO
 
 SELECT [Year],InPO, count(*) as Rotations from Rotations GROUP BY [Year],InPO
 
+SELECT [Year],InPO,League, count(*) as Matchs from Matches GROUP BY [Year],InPO, League
+order by [Year], InPO, League
+

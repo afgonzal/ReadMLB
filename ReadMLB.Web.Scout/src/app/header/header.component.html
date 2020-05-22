@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-2">
   <a routerLink="/" class="navbar-brand">
     <img src="assets/logos/mlb.png" class="brand-logo" alt="Read MLB 2020">
     Read MLB
@@ -12,5 +12,12 @@
       <li class="nav-item" role="presentation" routerLinkActive="active"><a class="nav-link" routerLink="teams">Teams</a></li>
       <li class="nav-item" role="presentation" routerLinkActive="active"><a class="nav-link" routerLink="stats">Stats</a></li>
     </ul>
+  </div>
+  <div class="pr-4">
+    <h4 class="text-primary">{{organizationName}} - {{currentYear}}</h4>
+  </div>
+  <div class="pull-right">
+    <img src="assets/logos/mvp2004.png" class="brand-logo" alt="Read MLB 2020">
+    AGA - ReadMLB 2020
   </div>
 </nav>

@@ -1,16 +1,16 @@
 truncate table Batting;
+truncate table Defense
+
+truncate table Matches
 
 truncate table Pitching;
 
-truncate table Schedule;
 
-truncate table [Rotations];
 
 truncate table [Rosters]
-
-truncate table Defense
-
+truncate table [Rotations];
 truncate table Running
+
 
 delete  from Players
 

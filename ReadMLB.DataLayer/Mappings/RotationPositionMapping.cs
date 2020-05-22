@@ -12,7 +12,6 @@ namespace ReadMLB.DataLayer.Mappings
             builder.ToTable("Rotations");
             builder.HasOne(e => e.Player);
             builder.Property(e => e.PitcherAssignment).HasConversion(v => (byte)v, v => (PitcherAssignment)v);
-
         }
     }
 }

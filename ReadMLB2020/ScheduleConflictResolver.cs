@@ -12,6 +12,7 @@ namespace ReadMLB2020
     {
         private IList<Team> _teams;
         private HtmlDocument _html;
+        private readonly bool _inPO;
 
         private const byte NYY = 64;
         private const byte NYM = 63;
@@ -69,8 +70,10 @@ namespace ReadMLB2020
                     new Score { RivalScore = match.HomeScore, TeamScore = match.AwayScore }, false);
             }
 
+
             return match;
         }
+
 
         private byte[] CityRivals(string cityName)
         {

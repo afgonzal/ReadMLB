@@ -15,12 +15,13 @@ namespace ReadMLB2020
         private readonly bool _inPO;
         private readonly string _runningStats;
         private readonly FindPlayer _findPlayer;
-
-        public ReadRunning(IRunningStatsService runningService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO)
+        private readonly TeamsHelper _teamsHelper;
+        public ReadRunning(IRunningStatsService runningService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, TeamsHelper teamsHelper)
         {
             _runningService = runningService;
             _year = year;
             _inPO = inPO;
+            _teamsHelper = teamsHelper;
             _runningStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["BattingStats"]}");
             _findPlayer = findPlayer;
         }
@@ -39,7 +40,7 @@ namespace ReadMLB2020
                     var runningStat = new Running
                     {
                         PlayerId = player.PlayerId,
-                        TeamId = (attrs[4] == "-1") ? (byte)100 : Convert.ToByte(attrs[4]),
+                        TeamId = (attrs[4] == "-1") ? (byte)100 : _teamsHelper.GetActualTeam(Convert.ToByte(attrs[4]), Convert.ToByte(attrs[5])).TeamId,
                         League = Convert.ToByte(attrs[5]),
                         Year = _year,
                         InPO = _inPO,

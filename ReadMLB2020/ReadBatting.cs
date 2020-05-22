@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Batting = ReadMLB.Entities.Batting;
 
 namespace ReadMLB2020
 {
@@ -19,13 +20,14 @@ namespace ReadMLB2020
         private readonly string _battingStats;
         private readonly IBattingService _battingService;
         private readonly FindPlayer _findPlayer;
+        private readonly TeamsHelper _teamsHelper;
 
-
-        public ReadBatting(IBattingService battingService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile)
+        public ReadBatting(IBattingService battingService, FindPlayer findPlayer, IConfiguration config, short year, bool inPO, string sourceFile, TeamsHelper teamsHelper)
         {
             _inPO = inPO;
             _year = year;
             _battingSource = sourceFile;
+            _teamsHelper = teamsHelper;
             _battingStats = Path.Combine(config["SourceFolder"], $"{year}{(inPO ? 'P' : 'R')}{config["BattingStats"]}");
             _battingTemp = Path.Combine(config["SourceFolder"], config["BattingTempStats"]);
             _battingService = battingService;
@@ -139,11 +141,11 @@ namespace ReadMLB2020
                     try
                     {
                         var player = _findPlayer.FindPlayerById(players, Convert.ToInt64(attrs[1]), _year, attrs[2].ExtractName(), attrs[3].ExtractName());
-
+                        var realTeam = (attrs[4] == "-1") ? null : _teamsHelper.GetActualTeam(Convert.ToByte(attrs[4]), Convert.ToByte(attrs[5]));
                         var bstat = new Batting
                         {
                             PlayerId = player.PlayerId,
-                            TeamId = (attrs[4] == "-1") ? (byte) 100 : Convert.ToByte(attrs[4]),
+                            TeamId = (attrs[4] == "-1") ? (byte) 100 : realTeam.TeamId,
                             League = Convert.ToByte(attrs[5]),
                             G = Convert.ToInt16(attrs[6]),
                             BattingVs = BattingVs.Total,
@@ -164,19 +166,19 @@ namespace ReadMLB2020
                         };
                         await _battingService.AddBattingStatAsync(bstat);
 
-                        if (bstat.League == 0 && bstat.PA > 0)
-                        {
-                            //find if we have stats for same player enum
-                            var splitStats = tempStats.Where(ts => ts.PlayerId == Convert.ToInt64(attrs[0]));
-                            foreach (var tempStat in splitStats)
-                            {
-                                tempStat.G = bstat.G;
-                                tempStat.PlayerId = bstat.PlayerId;
-                                tempStat.TeamId = bstat.TeamId;
-                                await _battingService.AddBattingStatAsync(tempStat);
-                            }
+                        //if (bstat.League == 0 && bstat.PA > 0)
+                        //{
+                        //    //find if we have stats for same player enum
+                        //    var splitStats = tempStats.Where(ts => ts.PlayerId == Convert.ToInt64(attrs[0]));
+                        //    foreach (var tempStat in splitStats)
+                        //    {
+                        //        tempStat.G = bstat.G;
+                        //        tempStat.PlayerId = bstat.PlayerId;
+                        //        tempStat.TeamId = bstat.TeamId;
+                        //        await _battingService.AddBattingStatAsync(tempStat);
+                        //    }
 
-                        }
+                        //}
                     }
                     catch (Exception ex)
                     {

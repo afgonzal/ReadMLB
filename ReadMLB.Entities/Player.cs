@@ -24,6 +24,8 @@ namespace ReadMLB.Entities
         public byte? Shirt { get; set; }
         public Bats? Bats { get; set; }
         public ThrowHand? Throws { get; set; }
+
+        public Team Team { get; set; }
     }
 
     public enum Bats

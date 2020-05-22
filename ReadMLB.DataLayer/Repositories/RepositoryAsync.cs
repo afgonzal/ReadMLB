@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using ReadMLB.DataLayer.Helper;
 
 namespace ReadMLB.DataLayer.Repositories
 {
@@ -26,10 +25,16 @@ namespace ReadMLB.DataLayer.Repositories
             return Context.Set<TEntity>().FindAsync(id);
         }
 
+        public virtual Task<TEntity> GetAsync<TInc>(Expression<Func<TEntity, TInc>> include, Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().AsNoTracking().Include(include).SingleOrDefaultAsync(predicate);
+        }
+
         public virtual ValueTask<TEntity> GetAsync(params object[] keys)
         {
             return Context.Set<TEntity>().FindAsync(keys);
         }
+
 
         public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
@@ -62,6 +67,11 @@ namespace ReadMLB.DataLayer.Repositories
             if (skip.HasValue)
                 findResult = findResult.Skip(skip.Value);
             return await findResult.ToListAsync();
+        }
+
+        public Task<List<TEntity>> FindAsync<TInc>(Expression<Func<TEntity, TInc>> include, Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().AsNoTracking().Include(include).Where(predicate).ToListAsync();
         }
 
         public async Task<IEnumerable<TEntity>> FindAsync<TInc,TKey>(Expression<Func<TEntity,TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
@@ -101,6 +111,25 @@ namespace ReadMLB.DataLayer.Repositories
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return Context.Set<TEntity>().AsNoTracking().SingleOrDefaultAsync(predicate);
+        }
+
+        public Task<TEntity> SingleOrDefaultAsync<TInc>(Expression<Func<TEntity, TInc>> include, Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().AsNoTracking().Include(include).SingleOrDefaultAsync(predicate);
+        }
+
+        public Task<TEntity> SingleOrDefaultAsync(IEnumerable<string> includes, Expression<Func<TEntity, bool>> predicate)
+        {
+            var findResult = Context.Set<TEntity>().AsNoTracking();
+            if (includes.Any())
+            {
+                //findResult = findResult.Include(includes.First()).;
+                foreach (var include in includes)
+                {
+                    findResult = findResult.Include(include);
+                }
+            }
+            return findResult.SingleOrDefaultAsync(predicate);
         }
 
         public ValueTask<EntityEntry<TEntity>> AddAsync(TEntity entity)
