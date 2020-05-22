@@ -55,6 +55,7 @@ namespace ReadMLB2020
         public async Task AddNewPlayersToDbAsync()
         {
             Console.WriteLine("Adding players to DB");
+            //await _playersService.CleanYearAsync(_year);
             var players = await GetPlayersAsync();
             int countNewPlayers = 0;
             using (var file = new StreamReader(_playersTemp))
@@ -71,7 +72,8 @@ namespace ReadMLB2020
                         LastName = attrs[3].ExtractName(),
                         Year = _year
                     };
-                    var player = await _playersService.FindEAPlayerAsync(newPlayer.EAId, _year);
+                    var player = await _playersService.FindEAPlayerAsync(newPlayer.EAId, _year, newPlayer.FirstName, newPlayer.LastName);
+                    
                     //Player player = null;
                     //throw new Exception("fix this part, <year or year-1 won-t work when you have multiple years");
                     //player = players.SingleOrDefault(p => p.EAId == newPlayer.EAId && p.Year < _year);

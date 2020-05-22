@@ -23,7 +23,7 @@ namespace ReadMLB.DataLayer.Repositories
 
         Task<int> CompleteAsync();
         Task TruncateTableAsync(string tableName);
-        Task CleanYearFromTableAsync(string tableName, short year, bool inPO);
+        Task CleanYearFromTableAsync(string tableName, short year, bool? inPO = null);
         void DisableTracking();
         void EnableTracking();
 
@@ -80,10 +80,15 @@ namespace ReadMLB.DataLayer.Repositories
             return _context.Database.ExecuteSqlRawAsync($"Truncate Table {tableName}");
         }
 
-        public Task CleanYearFromTableAsync(string tableName, short year, bool inPO)
+        public Task CleanYearFromTableAsync(string tableName, short year, bool? inPO = null)
         {
-            return _context.Database.ExecuteSqlRawAsync(sql: $"DELETE FROM {tableName} WHERE Year = {year} AND InPO = {(inPO ? 1 : 0)}");
+            if (inPO.HasValue)
+                return _context.Database.ExecuteSqlRawAsync(sql: $"DELETE FROM {tableName} WHERE Year = {year} AND InPO = {(inPO.Value ? 1 : 0)}");
+            else
+                return _context.Database.ExecuteSqlRawAsync(sql: $"DELETE FROM {tableName} WHERE Year = {year}");
         }
+
+      
 
         public void DisableTracking()
         {
