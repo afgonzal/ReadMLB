@@ -5,9 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Batting = ReadMLB.Entities.Batting;
+using Newtonsoft.Json;
 
 namespace ReadMLB2020
 {
@@ -131,6 +130,7 @@ namespace ReadMLB2020
             Console.WriteLine("Update Batting stats");
             await _battingService.CleanYearAsync(_year, _inPO);
             var tempStats = ParseBattingTemp();
+            var j = tempStats.Where(p => p.PlayerId == 6);
             //Iterate Battting stats
             using (var file = new StreamReader(_battingStats))
             {
@@ -166,19 +166,20 @@ namespace ReadMLB2020
                         };
                         await _battingService.AddBattingStatAsync(bstat);
 
-                        //if (bstat.League == 0 && bstat.PA > 0)
-                        //{
-                        //    //find if we have stats for same player enum
-                        //    var splitStats = tempStats.Where(ts => ts.PlayerId == Convert.ToInt64(attrs[0]));
-                        //    foreach (var tempStat in splitStats)
-                        //    {
-                        //        tempStat.G = bstat.G;
-                        //        tempStat.PlayerId = bstat.PlayerId;
-                        //        tempStat.TeamId = bstat.TeamId;
-                        //        await _battingService.AddBattingStatAsync(tempStat);
-                        //    }
+                        if (bstat.League == 0 && bstat.PA > 0)
+                        {
+                            //find if we have stats for same player enum
+                            var splitStats = tempStats.Where(ts => ts.PlayerId == Convert.ToInt64(attrs[0]));
+                            foreach (var tempStat in splitStats)
+                            {
+                                var bs = JsonConvert.DeserializeObject<Batting>(JsonConvert.SerializeObject(tempStat));
+                                bs.G = bstat.G;
+                                bs.PlayerId = bstat.PlayerId;
+                                bs.TeamId = bstat.TeamId;
+                                await _battingService.AddBattingStatAsync(bs);
+                            }
 
-                        //}
+                        }
                     }
                     catch (Exception ex)
                     {
