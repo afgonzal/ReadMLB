@@ -11,6 +11,7 @@ namespace ReadMLB.Services
         Task<long> AddPitchingStatAsync(Pitching statsMajor);
         Task<IEnumerable<Pitching>> GetPlayerPitchingHistoryAsync(long playerId);
         Task<IEnumerable<Pitching>> GetPlayerPitchingStatsAsync(long playerId, short year);
+        Task BatchInsertPitchingStatAsync(ICollection<Pitching> currentBatch);
     }
     public class PitchingService : IPitchingService
     {
@@ -41,6 +42,12 @@ namespace ReadMLB.Services
         public Task<IEnumerable<Pitching>> GetPlayerPitchingStatsAsync(long playerId, short year)
         {
             return _unitOfWork.PitchingStats.FindAsync(ps => ps.PlayerId == playerId && ps.Year == year);
+        }
+
+        public async Task BatchInsertPitchingStatAsync(ICollection<Pitching> currentBatch)
+        {
+            await _unitOfWork.PitchingStats.AddRangeAsync(currentBatch);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

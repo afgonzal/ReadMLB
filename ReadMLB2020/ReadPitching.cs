@@ -3,8 +3,10 @@ using ReadMLB.Entities;
 using ReadMLB.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReadMLB2020
@@ -117,6 +119,8 @@ namespace ReadMLB2020
         internal async Task UpdatePitchingStatsAsync(IList<Player> players, IList<Team> teams)
         {
             Console.WriteLine("Update Pitching stats.");
+            var timer = new Stopwatch();
+            timer.Start();
             await _pitchingService.CleanYearAsync(_year, _inPo);
             var pStats = ParsePitchingFile();
 
@@ -178,12 +182,44 @@ namespace ReadMLB2020
                                 stats.SF = extraStats.SF;
                                 stats.SH = extraStats.SH;
                             }
-                            await _pitchingService.AddPitchingStatAsync(stats);
+                            await InsertToDbAsync(stats);
                     }
                 }
                 file.Close();
             }
-            Console.WriteLine("Pitching parse completed");
+            await FinishLastInsertBatch();
+            timer.Stop();
+            Console.WriteLine("\nPitching parse completed {0}s", timer.Elapsed.TotalSeconds);
         }
+
+
+        #region Batch Insert
+        private readonly IList<Pitching> _currentBatch = new List<Pitching>();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private async Task InsertToDbAsync(Pitching pstat)
+        {
+            await _semaphore.WaitAsync();
+            _currentBatch.Add(pstat);
+            if (_currentBatch.Count() >= 200)
+            {
+
+                await _pitchingService.BatchInsertPitchingStatAsync(_currentBatch);
+                Console.Write(".");
+                _currentBatch.Clear();
+            }
+            _semaphore.Release();
+        }
+
+        private async Task FinishLastInsertBatch()
+        {
+            if (_currentBatch.Any())
+            {
+                await _pitchingService.BatchInsertPitchingStatAsync(_currentBatch);
+                _currentBatch.Clear();
+            }
+        }
+
+
+        #endregion
     }
 }

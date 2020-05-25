@@ -21,6 +21,7 @@ namespace ReadMLB.Services
         Task CleanYearAsync(short year, bool inPO);
         Task<IEnumerable<Batting>> GetPlayerBattingStatsAsync(long playerId, short year, byte? league = null);
         Task<List<Batting>> GetPlayerBattingStatsAsync(long playerId, bool inPO);
+        Task BatchInsertBattingStatAsync(ICollection<Batting> battingStats);
     }
     public class BattingService : IBattingService
     {
@@ -35,6 +36,12 @@ namespace ReadMLB.Services
                 var result = await _unitOfWork.BattingStats.AddAsync(battingStat);
                 await _unitOfWork.CompleteAsync();
                 return result.Entity.BattingId;
+        }
+
+        public async Task BatchInsertBattingStatAsync(ICollection<Batting> battingStats)
+        {
+            await _unitOfWork.BattingStats.AddRangeAsync(battingStats);
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<ICollection<Batting>> GetOrganizationBattersAsync(short year, byte organizationId)

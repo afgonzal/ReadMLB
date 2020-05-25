@@ -3,8 +3,10 @@ using ReadMLB.Entities;
 using ReadMLB.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -128,6 +130,8 @@ namespace ReadMLB2020
         public async Task UpdateBattingStatsAsync(IList<Player> players)
         {
             Console.WriteLine("Update Batting stats");
+            var timer = new Stopwatch();
+            timer.Start();
             await _battingService.CleanYearAsync(_year, _inPO);
             var tempStats = ParseBattingTemp();
             var j = tempStats.Where(p => p.PlayerId == 6);
@@ -164,7 +168,8 @@ namespace ReadMLB2020
                             InPO = _inPO,
                             Year = _year
                         };
-                        await _battingService.AddBattingStatAsync(bstat);
+                        //await _battingService.AddBattingStatAsync(bstat);
+                        await InsertToDbAsync(bstat);
 
                         if (bstat.League == 0 && bstat.PA > 0)
                         {
@@ -176,7 +181,8 @@ namespace ReadMLB2020
                                 bs.G = bstat.G;
                                 bs.PlayerId = bstat.PlayerId;
                                 bs.TeamId = bstat.TeamId;
-                                await _battingService.AddBattingStatAsync(bs);
+                               // await _battingService.AddBattingStatAsync(bs);
+                               await InsertToDbAsync(bs);
                             }
 
                         }
@@ -189,7 +195,42 @@ namespace ReadMLB2020
                 }
                 file.Close();
             }
-            Console.WriteLine("Batting update complete.");
+            //must complete last batch
+            await FinishLastInsertBatch();
+            timer.Stop();
+            Console.WriteLine("\nBatting update complete. {0}s", timer.Elapsed.TotalSeconds);
         }
+
+        
+
+        #region Batch Insert
+        private readonly IList<Batting> _currentBatch = new List<Batting>();
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private async Task InsertToDbAsync(Batting bstat)
+        {
+            await _semaphore.WaitAsync();
+            _currentBatch.Add(bstat);
+            if (_currentBatch.Count() >= 200)
+            {
+
+                await _battingService.BatchInsertBattingStatAsync(_currentBatch);
+                Console.Write(".");
+                _currentBatch.Clear();
+            }
+            _semaphore.Release();
+        }
+
+        private async Task FinishLastInsertBatch()
+        {
+            if (_currentBatch.Any())
+            {
+                await _battingService.BatchInsertBattingStatAsync(_currentBatch);
+                _currentBatch.Clear();
+            }
+        }
+
+      
+        #endregion
     }
+   
 }
