@@ -10,6 +10,7 @@ namespace ReadMLB.DataLayer.Mappings
         {
             builder.HasKey(e => e.RunningId);
             builder.Property(e => e.RunningId).ValueGeneratedOnAdd();
+            builder.HasOne(e => e.Team).WithMany().HasForeignKey(e => e.TeamId);
             builder.ToTable("Running");
         }
     }

@@ -18,8 +18,18 @@ namespace ReadMLB.Entities
 
         public float Fld
         {
-            get => (PO + ASST + ERR > 0 ? (float) (PO + ASST) / (float) (PO + ASST + ERR) : 0F);
+            get => (PO + ASST + ERR > 0 ? (float)Math.Round((PO + ASST) / (float) (PO + ASST + ERR),3) : 0F);
             protected set { }
         }
+
+        public short Ch
+        {
+            get => (short) (PO + ASST + ERR);
+            protected set {}
+        }
+
+        public short G { get; set; }
+
+        public Team Team { get; set; }
     }
 }

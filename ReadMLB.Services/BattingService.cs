@@ -79,7 +79,7 @@ namespace ReadMLB.Services
 
         public Task<List<Batting>> GetPlayerBattingStatsAsync(long playerId, bool inPO)
         {
-            return _unitOfWork.BattingStats.FindAsync(b => b.Team, b => b.PlayerId == playerId && b.InPO == inPO);
+            return _unitOfWork.BattingStats.FindAsync(b => b.Team.Organization, b => b.PlayerId == playerId && b.InPO == inPO);
         }
     }
 }

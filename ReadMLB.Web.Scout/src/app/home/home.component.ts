@@ -24,6 +24,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentOrganization.teams = settings.organization;
       this.currentOrganization.year = settings.currentYear;
       this.currentOrganization.inPO = settings.inPO;
+      localStorage.setItem('currentYear', settings.currentYear.toString());
+      localStorage.setItem('organization', JSON.stringify(settings.organization));
     });
   }
 

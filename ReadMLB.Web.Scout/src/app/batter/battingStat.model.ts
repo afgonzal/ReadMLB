@@ -12,7 +12,7 @@ public H2B: number;
 public H3B: number;
 public HR: number;
 public RBI: number;
-public SO: number;
+public K: number;
 public BB: number;
 public SH: number;
 public SF: number;

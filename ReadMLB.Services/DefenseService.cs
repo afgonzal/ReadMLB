@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReadMLB.DataLayer.Repositories;
 using ReadMLB.Entities;
 
@@ -8,6 +9,7 @@ namespace ReadMLB.Services
     {
         Task<long> AddDefenseStatsAsync(Defense newDefenseStat);
         Task CleanYearAsync(short year, bool inPO);
+        Task<List<Defense>> GetPlayerDefenseStatsAsync(long playerId, bool inPo);
     }
     public class DefenseStatsService : IDefenseStatsService
     {
@@ -27,6 +29,12 @@ namespace ReadMLB.Services
         public Task CleanYearAsync(short year, bool inPO)
         {
             return _unitOfWork.CleanYearFromTableAsync("Defense", year, inPO);
+        }
+
+        public Task<List<Defense>> GetPlayerDefenseStatsAsync(long playerId, bool inPo)
+        {
+            return _unitOfWork.DefenseStats.FindAsync(d => d.Team.Organization,
+                d => d.PlayerId == playerId && d.InPO == inPo);
         }
     }
 }

@@ -7,4 +7,5 @@ export interface TeamModel {
   teamId: number;
   organizationId: number;
   organization: string;
+  logo: string;
 }

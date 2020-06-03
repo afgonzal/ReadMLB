@@ -42,6 +42,7 @@ namespace ReadMLB2020
                         PlayerId = player.PlayerId,
                         TeamId = (attrs[4] == "-1") ? (byte)100 : _teamsHelper.GetActualTeam(Convert.ToByte(attrs[4]), Convert.ToByte(attrs[5])).TeamId,
                         League = Convert.ToByte(attrs[5]),
+                        G = Convert.ToInt16(attrs[6]),
                         Year = _year,
                         InPO = _inPO,
                         PO = Convert.ToInt16(attrs[7]),

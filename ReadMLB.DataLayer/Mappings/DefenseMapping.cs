@@ -12,7 +12,7 @@ namespace ReadMLB.DataLayer.Mappings
             builder.Property(e => e.DefenseId).ValueGeneratedOnAdd();
             builder.ToTable("Defense");
             builder.Property(e => e.Fld).HasColumnType("decimal(4,3)");
-
+            builder.HasOne(e => e.Team).WithMany().HasForeignKey(e => e.TeamId);
         }
     }
 }

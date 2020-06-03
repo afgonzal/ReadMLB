@@ -10,7 +10,7 @@ namespace ReadMLB.Services
     {
         Task<IEnumerable<Team>> GetTeamsAsync();
 
-        ValueTask<Team> GetTeamByIdAsync(byte teamId);
+        Task<Team> GetTeamByIdAsync(byte teamId);
 
         Task<IEnumerable<Team>> GetTeamOrganizationAsync(byte teamId);
 
@@ -53,9 +53,9 @@ namespace ReadMLB.Services
                 t.OrganizationId == organizationId || t.TeamId == organizationId, t => t.League);
         }
 
-        public ValueTask<Team> GetTeamByIdAsync(byte teamId)
+        public Task<Team> GetTeamByIdAsync(byte teamId)
         {
-            return _unitOfWork.Teams.GetAsync(teamId);
+            return _unitOfWork.Teams.GetAsync(t=> t.Organization, t => t.TeamId == teamId);
         }
     }
 }

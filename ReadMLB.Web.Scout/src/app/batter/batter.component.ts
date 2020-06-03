@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { PlayerService } from '../players/players.service';
@@ -11,14 +11,15 @@ import { LeaguePipe } from '../teams/league-pipe.pipe';
   styleUrls: ['./batter.component.scss'],
   providers: [LeaguePipe]
 })
-export class BatterComponent implements OnInit {
+export class BatterComponent implements OnInit, OnDestroy {
   @Input() inPO: boolean;
   playerSubscription: Subscription;
+  routeSubscription: Subscription;
   battingStats: BattingStatModel[];
   rowStyle = 'bat-row';
   columnDefs = [
-    {headerName: 'Year', field: 'year', width: 58, cellClass: 'text-right bat-cell'},
-    {headerName: 'Tm', field: 'teamAbr', width: 57, cellClass: 'bat-cell'},
+    {headerName: 'Year', field: 'year', width: 62, cellClass: 'text-right bat-cell', tooltipField: 'organization'},
+    {headerName: 'Tm', field: 'teamAbr', width: 57, cellClass: 'bat-cell', tooltipField: 'teamName'},
     {headerName: 'Lg', valueFormatter(params) {
       const pipe = new LeaguePipe();
       return pipe.transform(params.data.league);
@@ -33,7 +34,7 @@ export class BatterComponent implements OnInit {
     {headerName: 'HR', field: 'hr' , width: 57, cellClass: 'text-right bat-cell'},
     {headerName: 'RBI', field: 'rbi' , width: 60, cellClass: 'text-right bat-cell'},
     {headerName: 'BB', field: 'bb' , width: 57, cellClass: 'text-right bat-cell'},
-    {headerName: 'SO', field: 'so' , width: 57, cellClass: 'text-right bat-cell'},
+    {headerName: 'K', field: 'k' , width: 57, cellClass: 'text-right bat-cell'},
     {headerName: 'BA', field: 'ba' , width: 60, cellClass: 'text-right bat-cell'},
     {headerName: 'OBP', field: 'obp' , width: 63, cellClass: 'text-right bat-cell'},
     {headerName: 'SLG', field: 'slg' , width: 60, cellClass: 'text-right bat-cell'},
@@ -42,7 +43,7 @@ export class BatterComponent implements OnInit {
     {headerName: 'BBK', field: 'bbk' , width: 63, cellClass: 'text-right bat-cell'},
     {headerName: 'ABHR', field: 'abhr' , width: 71, cellClass: 'text-right bat-cell'},
     {headerName: 'TB', field: 'tb' , width: 57, cellClass: 'text-right bat-cell'},
-    {headerName: 'HBP', field: 'hbp' , width: 60, cellClass: 'text-right bat-cell'},
+    {headerName: 'HBP', field: 'hbp' , width: 64, cellClass: 'text-right bat-cell'},
     {headerName: 'SH', field: 'sh' , width: 57, cellClass: 'text-right bat-cell'},
     {headerName: 'SF', field: 'sf' , width: 57, cellClass: 'text-right bat-cell'},
     {headerName: 'IBB', field: 'ibb' , width: 60, cellClass: 'text-right bat-cell'},
@@ -53,12 +54,17 @@ export class BatterComponent implements OnInit {
   constructor(private playerService: PlayerService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(
+    this.routeSubscription = this.route.params.subscribe(
       (params: Params) => {
         this.playerSubscription = this.playerService.getBattingStats(+params.id, this.inPO).subscribe(response  => {
           this.battingStats = response.filter(bs => bs.battingVs === 'Total');
         });
       }
     );
-    }
   }
+
+  ngOnDestroy(): void {
+    this.routeSubscription.unsubscribe();
+    this.playerSubscription.unsubscribe();
+  }
+}

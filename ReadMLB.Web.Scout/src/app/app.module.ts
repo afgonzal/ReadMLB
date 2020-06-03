@@ -18,6 +18,9 @@ import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { PlayerLinkRendererComponent } from './player-link-renderer.component';
 import { LeaguePipe } from './teams/league-pipe.pipe';
+import { PlayerRunningComponent } from './players/player-running/player-running.component';
+import { PlayerFieldRunningComponent } from './players/player-field-running/player-field-running.component';
+import { PlayerDefenseComponent } from './players/player-defense/player-defense.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +36,10 @@ import { LeaguePipe } from './teams/league-pipe.pipe';
     PlayersComponent,
     PlayerDetailComponent,
     PlayerLinkRendererComponent,
-    LeaguePipe
+    LeaguePipe,
+    PlayerRunningComponent,
+    PlayerFieldRunningComponent,
+    PlayerDefenseComponent
   ],
   imports: [
     BrowserModule,

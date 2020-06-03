@@ -1,15 +1,18 @@
 <div class="row">
-  <div class="col col-2" *ngIf="player">
+  <div class="col col-2 pr-0" *ngIf="player">
     <h2 class="text-primary">{{player.fullName()}} #{{player.shirt}}</h2>
     <div class="col-12">
       <p><strong>Position</strong> {{player.position()}}</p>
       <p><strong>Bats:</strong> {{player.bats}} <strong>Throws:</strong> {{player.throws}}</p>
-      <p><strong>Team:</strong> <a [routerLink]="'/teams/' + player.team.teamId">{{player.team.cityName}} {{player.team.teamName}}</a> ({{player.team.league | leaguePipe }} )</p>
+      <p><strong>Team:</strong>
+        <a [routerLink]="'/teams/' + player.team.teamId"  [queryParams]="{year: year}">
+          {{player.team.cityName}} {{player.team.teamName}}
+        </a> ({{player.team.league | leaguePipe }} )</p>
     </div>
   </div>
-  <div class="col col-10">
+  <div class="col col-10 pl-0">
     <div *ngIf="player">
-      <ul ngbNav #batterNav="ngbNav" class="nav-tabs">
+      <ul ngbNav #playerNav="ngbNav" class="nav-tabs">
         <li ngbNavItem>
           <a ngbNavLink>Standard Batting</a>
           <ng-template ngbNavContent><app-batter inPO="false"></app-batter></ng-template>
@@ -18,8 +21,20 @@
           <a ngbNavLink>Postseason Batting</a>
           <ng-template ngbNavContent><app-batter inPO="true"></app-batter></ng-template>
         </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Field/Running</a>
+          <ng-template ngbNavContent><app-player-field-running inPO="false"></app-player-field-running></ng-template>
+        </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Regular Pitching</a>
+          <ng-template ngbNavContent><app-pitcher inPO="false"></app-pitcher></ng-template>
+        </li>
+        <li ngbNavItem>
+          <a ngbNavLink>Postseason Pitching</a>
+          <ng-template ngbNavContent><app-pitcher inPO="true"></app-pitcher></ng-template>
+        </li>
       </ul>
-      <div [ngbNavOutlet]="batterNav"></div>
+      <div [ngbNavOutlet]="playerNav"></div>
     </div>
   </div>
 </div>
