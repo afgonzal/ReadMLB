@@ -9,3 +9,10 @@ export interface TeamModel {
   organization: string;
   logo: string;
 }
+
+export interface DivisionModel {
+  league: number;
+  divisionId: number;
+  name: string;
+  teams: TeamModel[];
+}

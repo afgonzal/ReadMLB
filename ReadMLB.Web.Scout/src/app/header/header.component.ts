@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SessionService } from '../session.service';
 import { Subscription } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   currentYear: number;
   organizationName: string;
   constructor(private session: SessionService) { }
@@ -15,8 +15,11 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.sessionSubscription = this.session.settingsObserver.subscribe( settings => {
       this.currentYear = settings.currentYear;
+      localStorage.setItem('currentYear', settings.currentYear.toString());
       this.organizationName = settings.organization[0].teamAbr;
     });
   }
-
+  ngOnDestroy(): void {
+    this.sessionSubscription.unsubscribe();
+  }
 }

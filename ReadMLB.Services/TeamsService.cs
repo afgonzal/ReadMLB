@@ -15,6 +15,8 @@ namespace ReadMLB.Services
         Task<IEnumerable<Team>> GetTeamOrganizationAsync(byte teamId);
 
         Task<IEnumerable<Team>> GetOrganizationById(byte organizationId);
+        Task<List<Team>> GetLeagueTeamsAsync(byte league);
+        Task<IEnumerable<Division>> GetLeagueDivisionsAsync(byte league);
     }
 
     public class TeamsService : ITeamsService
@@ -28,7 +30,7 @@ namespace ReadMLB.Services
 
         public async Task<IEnumerable<Team>> GetTeamsAsync()
         {
-            var teams = await _unitOfWork.Teams.FindAsync(t=>t.League.HasValue);
+            var teams = await _unitOfWork.Teams.FindAsync(t  => t.Organization, t=>t.League.HasValue);
             return teams.OrderBy(t => t.TeamId);
         }
 
@@ -51,6 +53,21 @@ namespace ReadMLB.Services
         {
             return _unitOfWork.Teams.FindAsync(t => t.Organization,t =>
                 t.OrganizationId == organizationId || t.TeamId == organizationId, t => t.League);
+        }
+
+        public Task<List<Team>> GetLeagueTeamsAsync(byte league)
+        {
+            return _unitOfWork.Teams.FindAsync(t => t.Organization, t => t.League == league);
+        }
+
+        public async Task<IEnumerable<Division>> GetLeagueDivisionsAsync(byte league)
+        {
+            var teams = await GetLeagueTeamsAsync(league);
+            var divisions = from team in teams
+                group team by team.Division
+                into division
+                select new Division {DivisionId = division.Key.GetValueOrDefault(), League = league,Teams = division.ToList()};
+            return divisions;
         }
 
         public Task<Team> GetTeamByIdAsync(byte teamId)

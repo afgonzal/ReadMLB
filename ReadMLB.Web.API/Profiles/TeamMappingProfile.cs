@@ -9,7 +9,10 @@ namespace ReadMLB.Web.API.Profiles
         public TeamMappingProfile()
         {
             CreateMap<Team, TeamModel>()
+                .ForMember(dest => dest.OrganizationId, opt => opt.MapFrom(src => src.OrganizationId ?? src.TeamId))
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization != null ? src.Organization.TeamAbr : src.TeamAbr));
+
+            CreateMap<Division, DivisionModel>();
         }
     }
 }

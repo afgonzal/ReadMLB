@@ -3,6 +3,7 @@
     <div class="col-sm-2 ml-2">
       <h2>{{team.cityName}} {{team.teamName}}</h2>
       <img [src]="'assets/logos/' + team.logo + '.png'" class="team-logo" [alt]="team.teamAbr">
+      <app-organization [selectedTeamId]="team.teamId" [organizationId]="team.organizationId" [year]="year"></app-organization>
     </div>
     <div class="col-sm-2" *ngIf="team.organization != team.teamAbr">
       <a [routerLink]="'/teams/' + team.organizationId" [queryParams]="{year: year}">

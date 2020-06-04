@@ -7,11 +7,13 @@ import { RostersComponent } from './rosters/rosters.component';
 import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { BatterComponent } from './batter/batter.component';
+import { LeagueComponent } from './teams/league/league.component';
 
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'teams', component: TeamsComponent, children: [
+    {path: 'league/:id', component: LeagueComponent},
     {path: ':id', component: TeamDetailComponent }
   ]},
   {path: 'rosters', component: RostersComponent},

@@ -1,0 +1,5 @@
+<div class="organization mt-4">
+  <div class="team row" *ngFor="let team of teams">
+    <a *ngIf="team.teamId != selectedTeamId" [routerLink]="'/teams/' + team.teamId" [queryParams]="{year: year}">{{team.teamName}} - {{team.league | leaguePipe }}</a>
+  </div>
+</div>
