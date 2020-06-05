@@ -27,8 +27,9 @@ namespace ReadMLB.Web.API
             services.AddAutoMapper(typeof(Startup));
             services.AddCors(c =>
             {
-                c.AddPolicy(ScoutOrigin, options => options.WithOrigins("http://localhost:4200"));
+                c.AddPolicy(ScoutOrigin, options => options.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             });
+
             services.AddControllers();
             
         }

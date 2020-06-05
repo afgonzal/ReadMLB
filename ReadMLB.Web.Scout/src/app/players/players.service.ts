@@ -66,5 +66,10 @@ export class PlayerService {
     return Object.assign(new BattingStatModel(), stat);
   }
 
+  searchPlayers(firstName: string, lastName: string, league?: number ){
+    return this.http.post<PlayerModel[]>(environment.API_URL + 'players/search',
+    {league, firstName, lastName});
+  }
+
 
 }

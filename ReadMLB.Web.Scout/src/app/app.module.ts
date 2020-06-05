@@ -24,6 +24,9 @@ import { PlayerDefenseComponent } from './players/player-defense/player-defense.
 import { LeagueComponent } from './teams/league/league.component';
 import { DivisionComponent } from './teams/division/division.component';
 import { OrganizationComponent } from './teams/organization/organization.component';
+import { PlayerSearchComponent } from './players/player-search/player-search.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LinkRendererComponent } from './link-renderer.component';
 
 @NgModule({
   declarations: [
@@ -39,16 +42,20 @@ import { OrganizationComponent } from './teams/organization/organization.compone
     PlayersComponent,
     PlayerDetailComponent,
     PlayerLinkRendererComponent,
+    LinkRendererComponent,
     LeaguePipe,
     PlayerRunningComponent,
     PlayerFieldRunningComponent,
     PlayerDefenseComponent,
     LeagueComponent,
     DivisionComponent,
-    OrganizationComponent
+    OrganizationComponent,
+    PlayerSearchComponent
   ],
   imports: [
     BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
     NgbModule,
     AppRoutingModule,
     HttpClientModule,

@@ -1,0 +1,43 @@
+<div class="pl-3">
+  <h1>Search Players</h1>
+  <div class="row ml-3">
+    <form (ngSubmit)="onFilter()" [formGroup]="filterForm" class="col-12">
+      <div class="form-row">
+        <div class=" col-1">
+          <div class="input-group">
+            <select formControlName="league" class="custom-select" id="inputGroupSelect01">
+              <option selected [ngValue]="null">All leagues</option>
+              <option *ngFor="let value of leagues" [ngValue]="value">{{value | leaguePipe}}</option>
+            </select>
+          </div>
+        </div>
+        <div class=" col-3">
+          <div class="input-group">
+            <input formControlName="firstName" class="form-control form-control-full" placeholder="first name">
+          </div>
+        </div>
+        <div class=" col-3">
+          <div class="input-group">
+            <input formControlName="lastName" class="form-control form-control-full" placeholder="last name">
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit">
+          Search
+        </button>
+      </div>
+    </form>
+  </div>
+  <div class="row mt-2 ml-3">
+    <span *ngIf="!results?.length">No results found</span>
+    <div class="col-12" *ngIf="results?.length">
+      <ag-grid-angular
+        style="width: 100%; height: 800px;"
+        class="ag-theme-alpine"
+        [rowData]="results"
+        [columnDefs]="columnDefs"
+        >
+      </ag-grid-angular>
+    </div>
+  </div>
+
+</div>

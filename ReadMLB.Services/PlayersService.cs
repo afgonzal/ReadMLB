@@ -3,6 +3,7 @@ using ReadMLB.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,9 @@ namespace ReadMLB.Services
         Task<Player> FindEAPlayerAsync(long eaId, short year, string fName, string lName);
         Task<int> UpdatePlayerAttributesAsync(Player player);
         Task CleanYearAsync(short year);
+
+        Task<IEnumerable<Player>> SearchAsync(byte? league, short? year, string firstName, string lastName,
+            PlayerPositionAbr? position);
     }
     public class PlayersService : IPlayersService
     {
@@ -74,6 +78,14 @@ namespace ReadMLB.Services
         public Task CleanYearAsync(short year)
         {
             return _unitOfWork.CleanYearFromTableAsync("Players", year);
+        }
+
+      
+
+        public Task<IEnumerable<Player>> SearchAsync(byte? league, short? year, string firstName, string lastName,
+            PlayerPositionAbr? position)
+        {
+            return _unitOfWork.Players.SearchPlayers(league, year, firstName, lastName, position);
         }
     }
 }

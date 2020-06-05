@@ -8,6 +8,7 @@ import { PlayersComponent } from './players/players.component';
 import { PlayerDetailComponent } from './players/player-detail/player-detail.component';
 import { BatterComponent } from './batter/batter.component';
 import { LeagueComponent } from './teams/league/league.component';
+import { PlayerSearchComponent } from './players/player-search/player-search.component';
 
 
 const routes: Routes = [
@@ -17,8 +18,9 @@ const routes: Routes = [
     {path: ':id', component: TeamDetailComponent }
   ]},
   {path: 'rosters', component: RostersComponent},
-  {path: 'players/:id', component: PlayersComponent, children: [
-    {path: 'details', component: PlayerDetailComponent}
+  {path: 'players', component: PlayersComponent, children: [
+    {path: 'search', component: PlayerSearchComponent},
+    {path: ':id', component: PlayerDetailComponent}
   ]},
   {path: 'batting/:id', component: BatterComponent}
 ];

@@ -31,7 +31,7 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
         this.teamSubscription = this.teamsService.getTeam(this.teamId).subscribe(response => {
           this.team = response;
           this.team.logo = this.team.organization.toUpperCase() + '-' + this.team.teamAbr.toUpperCase();
-          this.organizationLogo = this.team.organization + '-' + this.team.organization;
+          this.organizationLogo = this.team.organization.toUpperCase() + '-' + this.team.organization.toUpperCase();
         });
     });
   }

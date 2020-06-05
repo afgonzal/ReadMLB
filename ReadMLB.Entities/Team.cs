@@ -18,5 +18,6 @@ namespace ReadMLB.Entities
         public Team Organization { get; set; }
 
         public ICollection<Team> Affiliates { get; set; }
+        public ICollection<RosterPosition> Roster { get; set; }
     }
 }

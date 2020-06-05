@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -67,6 +69,14 @@ namespace ReadMLB.Web.API.Controllers
                     RS = running.RS
                 };
             return Ok(stats);
+        }
+
+        [HttpPost("search")]
+        public async Task<IActionResult> SearchPlayersAsync([FromBody]PlayerSearchRequest request)
+        {
+            var players = await _playersService.SearchAsync(request.League, request.Year, request.FirstName,
+                request.LastName, request.Position);
+            return Ok(_mapper.Map<IEnumerable<PlayerModel>>(players));
         }
     }
 }
