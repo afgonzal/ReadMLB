@@ -94,7 +94,7 @@ namespace ReadMLB.DataLayer.Repositories
                 
 
             var players = new List<Player>();
-            foreach (var rosterPosition in await query.ToListAsync())
+            foreach (var rosterPosition in await query.OrderByDescending(rp => rp.Year).ToListAsync())
             {
                 var player = rosterPosition.Player;
                 if (players.All(p => p.PlayerId != player.PlayerId))

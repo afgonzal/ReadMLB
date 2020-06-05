@@ -7,7 +7,13 @@
       <p><strong>Team:</strong>
         <a [routerLink]="'/teams/' + player.team.teamId"  [queryParams]="{year: year}">
           {{player.team.cityName}} {{player.team.teamName}}
-        </a> ({{player.team.league | leaguePipe }} )</p>
+        </a> ({{player.team.league | leaguePipe }} )
+      </p>
+      <div *ngFor="let team of player.teamHistory">
+        <a [routerLink]="'/teams/' + team.teamId"  [queryParams]="{year: team.year}">
+          {{team.teamName}}-{{team.organization}} {{team.year}} ({{team.league | leaguePipe }} )
+        </a>
+      </div>
     </div>
   </div>
   <div class="col col-10 pl-0">

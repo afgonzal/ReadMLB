@@ -13,12 +13,9 @@ import { PitchingStatModel } from '../pitcher/pitchingStat.model';
 export class PlayerService {
   constructor(private http: HttpClient) {  }
 
-  getPlayer(playerId: number, year: number, inPO: boolean): Observable<PlayerModel> {
-    if (!year) {
-      year = +localStorage.getItem('currentYear');
-    }
+  getPlayer(playerId: number, inPO: boolean): Observable<PlayerModel> {
     return this.http.get<PlayerModel>(environment.API_URL + 'players/' + playerId, {
-     params: new HttpParams().set('year', year.toString()).set('inPO', inPO.toString())
+     params: new HttpParams().set('inPO', inPO.toString())
    }).pipe(map( (response: PlayerModel) => {
      return this.transformPlayer(response);
    }));

@@ -21,7 +21,7 @@ export class PlayerDetailComponent implements OnInit {
       (params: Params) => {
         this.year = this.route.snapshot.queryParams.year;
         this.inPO = false;
-        this.playerSubscription = this.playerService.getPlayer(+params.id, this.year, this.inPO).subscribe(response  => {
+        this.playerSubscription = this.playerService.getPlayer(+params.id, this.inPO).subscribe(response  => {
           this.player = response;
         });
       }

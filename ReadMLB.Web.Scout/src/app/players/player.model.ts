@@ -9,6 +9,8 @@ export class PlayerModel {
   public bats: string;
   public throws: string;
   public team: TeamModel;
+  public teamHistory?: PlayerTeamHistoryModel[];
+
   public position(): string {
     let retVal = this.primaryPosition;
     if (this.secondaryPosition && this.primaryPosition !== this.secondaryPosition) {
@@ -19,4 +21,17 @@ export class PlayerModel {
   public fullName(): string {
     return this.firstName + ' ' + this.lastName;
   }
+
+}
+
+export interface PlayerTeamHistoryModel {
+  teamId: number;
+  teamAbr: string;
+  teamName: string;
+  organizationId: number;
+  organization: string;
+  league: number;
+  year: number;
+  inPO: boolean;
+  slot: number;
 }

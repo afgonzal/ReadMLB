@@ -26,6 +26,7 @@ namespace ReadMLB.Entities
         public ThrowHand? Throws { get; set; }
 
         public Team Team { get; set; }
+        public IEnumerable<RosterPosition> RosterHistory { get; set; }
     }
 
     public enum Bats

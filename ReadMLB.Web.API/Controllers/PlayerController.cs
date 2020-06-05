@@ -31,14 +31,10 @@ namespace ReadMLB.Web.API.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetPlayerAsync([FromRoute] long id, [FromQuery] short year, [FromQuery] bool inPO = false)
+        public async Task<IActionResult> GetPlayerAsync([FromRoute] long id, [FromQuery] bool inPO = false)
         {
-            if (year ==0 )
-            {
-                year = Convert.ToInt16(_config["CurrentYear"]);
-            }
-            var player = await _playersService.GetByIdAsync(id, year, inPO);
-            return Ok(_mapper.Map<PlayerModel>(player));
+            var player = await _playersService.GetByIdAsync(id, inPO);
+            return Ok(_mapper.Map<PlayerWithHistoryModel>(player));
         }
 
         [HttpGet("{id:int}/fieldRunning")]
@@ -78,5 +74,7 @@ namespace ReadMLB.Web.API.Controllers
                 request.LastName, request.Position);
             return Ok(_mapper.Map<IEnumerable<PlayerModel>>(players));
         }
+
+        
     }
 }

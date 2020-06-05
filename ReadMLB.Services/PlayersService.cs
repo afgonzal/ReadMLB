@@ -13,7 +13,7 @@ namespace ReadMLB.Services
     {
         Task<int> AddAsync(Player newPlayer);
 
-        ValueTask<Player> GetByIdAsync(long id, short year, bool inPO);
+        ValueTask<Player> GetByIdAsync(long id, bool inPO);
 
         Task<int> UpdateAsync(Player player);
         Task<IEnumerable<Player>> GetAll();
@@ -39,11 +39,15 @@ namespace ReadMLB.Services
                 return await _unitOfWork.CompleteAsync();
         }
 
-        public async ValueTask<Player> GetByIdAsync(long id, short year, bool inPO)
+        public async ValueTask<Player> GetByIdAsync(long id, bool inPO = false)
         {
-            var rosterPosition = await _unitOfWork.Rosters.SingleOrDefaultAsync(new List<string> {"Player", "Team"}, r => r.PlayerId == id && r.Year == year && r.InPO == inPO);
-            rosterPosition.Player.Team = rosterPosition.Team;
-            return rosterPosition.Player;
+            var player = await _unitOfWork.Players.SingleOrDefaultAsync(p => p.PlayerId == id);
+            if (player == null)
+                return null;
+            player.RosterHistory = await this.PlayerRosterHistoryAsync(id, false);
+            if (player.RosterHistory.Any())
+                player.Team = player.RosterHistory.First().Team;
+            return player;
         }
 
         public async Task<int> UpdateAsync(Player player)
@@ -86,6 +90,12 @@ namespace ReadMLB.Services
             PlayerPositionAbr? position)
         {
             return _unitOfWork.Players.SearchPlayers(league, year, firstName, lastName, position);
+        }
+
+        public async Task<IEnumerable<RosterPosition>> PlayerRosterHistoryAsync(long playerId, bool inPO = false)
+        {
+            return await _unitOfWork.Rosters.FindAsync(rp => rp.Team.Organization, rp => rp.PlayerId == playerId && rp.InPO == inPO,
+                rp => rp.Year);
         }
     }
 }
