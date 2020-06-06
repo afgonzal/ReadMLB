@@ -4,6 +4,7 @@ import { PlayerModel } from '../player.model';
 import { PlayerService } from '../players.service';
 import { PlayerLinkRendererComponent } from 'src/app/player-link-renderer.component';
 import { LinkRendererComponent } from 'src/app/link-renderer.component';
+import { LeaguePipe } from 'src/app/teams/league-pipe.pipe';
 
 @Component({
   selector: 'app-player-search',
@@ -26,8 +27,12 @@ export class PlayerSearchComponent implements OnInit {
     this.columnDefs = [
       {headerName: 'Team', cellRendererFramework: LinkRendererComponent,
         cellRendererParams: { inRouterLink: {route: '/teams', year: this.currentYear, idField: ['team', 'teamId'],
-        valueField: ['team', 'teamAbr'] }}
+        valueField: ['team', 'teamName'] }}
       },
+      {headerName: 'League', width: 80, valueGetter(params) {
+        const pipe = new LeaguePipe();
+        return pipe.transform(params.data.team.league);
+      }},
       {headerName: 'Org', cellRendererFramework: LinkRendererComponent,
         cellRendererParams: { inRouterLink: {route: '/teams', year: this.currentYear, idField: ['team', 'organizationId'],
         valueField: ['team', 'organization'] }}

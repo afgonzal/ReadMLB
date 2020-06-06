@@ -27,6 +27,8 @@ import { OrganizationComponent } from './teams/organization/organization.compone
 import { PlayerSearchComponent } from './players/player-search/player-search.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LinkRendererComponent } from './link-renderer.component';
+import { StatsComponent } from './stats/stats.component';
+import { BattingStatsComponent } from './stats/batting-stats/batting-stats.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +52,9 @@ import { LinkRendererComponent } from './link-renderer.component';
     LeagueComponent,
     DivisionComponent,
     OrganizationComponent,
-    PlayerSearchComponent
+    PlayerSearchComponent,
+    StatsComponent,
+    BattingStatsComponent
   ],
   imports: [
     BrowserModule,

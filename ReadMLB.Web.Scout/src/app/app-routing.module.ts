@@ -9,7 +9,7 @@ import { PlayerDetailComponent } from './players/player-detail/player-detail.com
 import { BatterComponent } from './batter/batter.component';
 import { LeagueComponent } from './teams/league/league.component';
 import { PlayerSearchComponent } from './players/player-search/player-search.component';
-
+import { StatsComponent } from './stats/stats.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -22,7 +22,8 @@ const routes: Routes = [
     {path: 'search', component: PlayerSearchComponent},
     {path: ':id', component: PlayerDetailComponent}
   ]},
-  {path: 'batting/:id', component: BatterComponent}
+  {path: 'batting/:id', component: BatterComponent},
+  {path: 'stats', component: StatsComponent}
 ];
 
 @NgModule({
