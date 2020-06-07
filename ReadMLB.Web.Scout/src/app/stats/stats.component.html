@@ -1,21 +1,23 @@
 <div class="row">
   <div class="col-12 stats-filter ml-3">
-    <form (ngSubmit)="onFilter()" [formGroup]="filterForm" class="col-12">
+    <form [formGroup]="filterForm" class="col-12">
       <div class="form-row">
         <div class="input-group col-2">
-          <select formControlName="league" class="custom-select" id="inputGroupSelect01">
-            <option selected [ngValue]="null">All leagues</option>
+          <select formControlName="league" class="custom-select" >
             <option *ngFor="let value of leagues" [ngValue]="value">{{value | leaguePipe}}</option>
           </select>
         </div>
         <div class="input-group col-2">
-          <select formControlName="year" class="custom-select" id="inputGroupSelect01">
+          <select formControlName="year" class="custom-select" >
             <option *ngFor="let year of years" [ngValue]="year">{{year}}</option>
           </select>
         </div>
-        <button class="btn btn-primary" type="submit">
-          Search
-        </button>
+        <div class="input-group col-2">
+          <select formControlName="team" class="custom-select">
+            <option value="null">All Teams</option>
+            <option *ngFor="let team of teams" [ngValue]="team.teamId">{{team.teamName}} - {{team.organization}}</option>
+          </select>
+        </div>
       </div>
     </form>
   </div>
@@ -26,11 +28,21 @@
       <ul ngbNav #playerNav="ngbNav" class="nav-tabs">
         <li ngbNavItem>
           <a ngbNavLink>Standard Batting</a>
-          <ng-template ngbNavContent><app-batting-stats [league]="filterForm.get('league').value" [year]="filterForm.get('year').value" [inPO]="false"></app-batting-stats></ng-template>
+          <ng-template ngbNavContent>
+            <app-batting-stats [league]="filterForm.get('league').value"
+              [year]="filterForm.get('year').value" [inPO]="false"
+              [teamId]="filterForm.get('team').value">
+            </app-batting-stats>
+          </ng-template>
         </li>
         <li ngbNavItem>
           <a ngbNavLink>Postseason Batting</a>
-          <ng-template ngbNavContent></ng-template>
+          <ng-template ngbNavContent>
+            <app-batting-stats [league]="filterForm.get('league').value"
+            [year]="filterForm.get('year').value" [inPO]="true"
+            [teamId]="filterForm.get('team').value">
+            </app-batting-stats>
+          </ng-template>
         </li>
         <li ngbNavItem>
           <a ngbNavLink>Field/Running</a>
@@ -38,11 +50,21 @@
         </li>
         <li ngbNavItem>
           <a ngbNavLink>Regular Pitching</a>
-          <ng-template ngbNavContent></ng-template>
+          <ng-template ngbNavContent>
+            <app-pitching-stats [league]="filterForm.get('league').value"
+            [year]="filterForm.get('year').value" [inPO]="false"
+            [teamId]="filterForm.get('team').value">
+          </app-pitching-stats>
+          </ng-template>
         </li>
         <li ngbNavItem>
           <a ngbNavLink>Postseason Pitching</a>
-          <ng-template ngbNavContent></ng-template>
+          <ng-template ngbNavContent>
+            <app-pitching-stats [league]="filterForm.get('league').value"
+              [year]="filterForm.get('year').value" [inPO]="true"
+              [teamId]="filterForm.get('team').value">
+            </app-pitching-stats>
+          </ng-template>
         </li>
       </ul>
       <div [ngbNavOutlet]="playerNav"></div>

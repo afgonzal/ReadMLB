@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { DivisionModel, TeamModel } from './team.model';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { PlayerModel } from '../players/player.model';
 
 @Injectable({providedIn: 'root'})
 export class TeamsService {
@@ -18,5 +19,13 @@ export class TeamsService {
 
   getOrganization(organizationId: number): Observable<TeamModel[]> {
     return this.http.get<TeamModel[]>(environment.API_URL + 'teams/organization/' + organizationId);
+  }
+
+  getLeagueTeams(league: number): Observable<TeamModel[]> {
+    return this.http.get<TeamModel[]>(environment.API_URL + 'teams/league/' + league);
+  }
+
+  getRoster(teamId: number, year: number): Observable<PlayerModel[]> {
+    return this.http.get<PlayerModel[]>(environment.API_URL + 'roster/' + teamId + '/' + year + '/false');
   }
 }

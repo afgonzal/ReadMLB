@@ -14,16 +14,27 @@ namespace ReadMLB.Web.API.Profiles
                         src.Team.Organization != null
                             ? src.Team.Organization.TeamAbr
                             : src.Team.TeamAbr))
+                
                 .ForMember(dest => dest.TeamName,
                     opt => opt.MapFrom(src => src.Team.TeamName))
                 .ForMember(dest => dest.TeamAbr,
                     opt => opt.MapFrom(src => src.Team.TeamAbr));
             CreateMap<Batting, BattingAndPlayerStatModel>()
-                .ForMember(dest => dest.TeamName,
+                .ForMember(dest => dest.TeamAbr,
+                    opt => opt.MapFrom(src => src.Team.TeamAbr))
+                .ForMember(dest => dest.Organization,
                     opt => opt.MapFrom(src =>
                         src.Team.Organization != null
-                            ? $"{src.Team.TeamName} - {src.Team.Organization.TeamAbr}"
-                            : $"{src.Team.TeamName}"))
+                            ? src.Team.Organization.TeamAbr
+                            : src.Team.TeamAbr))
+                .ForMember(dest => dest.OrganizationId,
+                    opt => opt.MapFrom(src =>
+                        src.Team.Organization != null
+                            ? src.Team.Organization.OrganizationId
+                            : src.Team.TeamId))
+                .ForMember(dest => dest.TeamName,
+                    opt => opt.MapFrom(src =>
+                        src.Team.TeamName))
                 .ForMember(dest => dest.PlayerName,
                     opt => opt.MapFrom(src => $"{src.Player.LastName}, {src.Player.FirstName}"));
                 

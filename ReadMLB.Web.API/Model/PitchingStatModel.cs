@@ -66,4 +66,9 @@ namespace ReadMLB.Web.API.Model
         public string Organization { get; set; }
 
     }
+    public class PitchingAndPlayerStatModel : PitchingStatModel
+    {
+        public string PlayerName { get; set; }
+
+    }
 }

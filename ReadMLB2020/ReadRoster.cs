@@ -67,18 +67,27 @@ namespace ReadMLB2020
                         _year, Convert.ToByte(attrs[0]));
                     if (player != null)
                     {
-                        var slot = new RosterPosition
+                        try
                         {
-                            TeamId = Convert.ToByte(attrs[0]),
-                            Slot = Convert.ToByte(attrs[3]),
-                            PlayerId = player.PlayerId,
-                            Year = _year,
-                            League =
-                                teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault(),
-                            InPO = _inPO
-                        };
+                            var slot = new RosterPosition
+                            {
+                                TeamId = Convert.ToByte(attrs[0]),
+                                Slot = Convert.ToByte(attrs[3]),
+                                PlayerId = player.PlayerId,
+                                Year = _year,
+                                League =
+                                    teams.Single(t => t.TeamId == Convert.ToByte(attrs[0])).League.GetValueOrDefault(),
+                                InPO = _inPO
+                            };
+                            await _rostersService.AddRosterAsync(slot);
+                        }
+                        catch (Exception ex)
+                        {
+                            var j = ex;
+                        }
+
                         //Console.WriteLine("{0} {1} {2}", slot.Slot, player.FirstName, player.LastName);
-                        await _rostersService.AddRosterAsync(slot);
+                       
                     }
                     else
                     {

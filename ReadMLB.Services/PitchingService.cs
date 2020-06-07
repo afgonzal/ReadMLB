@@ -13,6 +13,7 @@ namespace ReadMLB.Services
         Task<IEnumerable<Pitching>> GetPlayerPitchingStatsAsync(long playerId, short year);
         Task<List<Pitching>> GetPlayerPitchingStatsAsync(long playerId, bool inPO = false);
         Task BatchInsertPitchingStatAsync(ICollection<Pitching> currentBatch);
+        Task<IEnumerable<Pitching>> GetLeaguePitchingStatsLeadersAsync(byte league, short year, bool inPo,byte? teamId, int take);
     }
     public class PitchingService : IPitchingService
     {
@@ -55,6 +56,17 @@ namespace ReadMLB.Services
         {
             await _unitOfWork.PitchingStats.AddRangeAsync(currentBatch);
             await _unitOfWork.CompleteAsync();
+        }
+
+        public Task<IEnumerable<Pitching>> GetLeaguePitchingStatsLeadersAsync(byte league, short year, bool inPo,
+            byte? teamId, int take)
+        {
+            if (!teamId.HasValue)
+                return _unitOfWork.PitchingStats.FindAsync(new List<string> { "Team", "Player"},
+                    p => p.League == league && p.Year == year && p.InPO == inPo, p => p.IP10,true, take, 0);
+            return _unitOfWork.PitchingStats.FindAsync(new List<string> { "Team", "Player" },
+                p => p.League == league && p.Year == year && p.InPO == inPo && (p.TeamId == teamId.Value || p.Team.OrganizationId == teamId.Value), p => p.IP10, true, take, 0);
+
         }
     }
 }

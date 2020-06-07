@@ -29,6 +29,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LinkRendererComponent } from './link-renderer.component';
 import { StatsComponent } from './stats/stats.component';
 import { BattingStatsComponent } from './stats/batting-stats/batting-stats.component';
+import { PitchingStatsComponent } from './stats/pitching-stats/pitching-stats.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { BattingStatsComponent } from './stats/batting-stats/batting-stats.compo
     OrganizationComponent,
     PlayerSearchComponent,
     StatsComponent,
-    BattingStatsComponent
+    BattingStatsComponent,
+    PitchingStatsComponent,
   ],
   imports: [
     BrowserModule,

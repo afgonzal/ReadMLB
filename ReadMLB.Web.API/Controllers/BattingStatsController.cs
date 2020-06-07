@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -50,9 +48,9 @@ namespace ReadMLB.Web.API.Controllers
         }
 
         [HttpGet("league/{league:int}/{year:int}")]
-        public async Task<IActionResult> GetLeagueBattingStatsAsync([FromRoute] byte league, [FromRoute] short year, [FromQuery]bool inPO=false, [FromQuery]int take = 1000, [FromQuery]BattingVs battingVs = BattingVs.Total)
+        public async Task<IActionResult> GetLeagueBattingStatsAsync([FromRoute] byte league, [FromRoute] short year, [FromQuery]bool inPO=false, [FromQuery]byte? teamId = null, [FromQuery]int take = 500, [FromQuery]BattingVs battingVs = BattingVs.Total)
         {
-            var result = await _battingService.GetLeagueBattingStatsLeadersAsync(league, year, inPO, take, BattingVs.Total);
+            var result = await _battingService.GetLeagueBattingStatsLeadersAsync(league, year, inPO, take, BattingVs.Total, teamId);
             return Ok(_mapper.Map<IEnumerable<BattingAndPlayerStatModel>>(result));
         }
     }

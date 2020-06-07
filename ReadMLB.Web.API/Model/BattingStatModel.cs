@@ -56,6 +56,7 @@ namespace ReadMLB.Web.API.Model
     }
     public class BattingAndPlayerStatModel : BattingStatModel
     {
+        public byte OrganizationId { get; set; }
         public string PlayerName { get; set; }
         public long PlayerId { get; set; }
 

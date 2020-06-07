@@ -74,11 +74,21 @@ namespace ReadMLB.DataLayer.Repositories
             return Context.Set<TEntity>().AsNoTracking().Include(include).Where(predicate).ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync<TInc,TKey>(Expression<Func<TEntity,TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
+
+        public async Task<IEnumerable<TEntity>> FindAsync<TInc,TKey>(Expression<Func<TEntity,TInc>> include, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, bool descending = false, int? take = 50, int? skip = 0)
         {
             var findResult = Context.Set<TEntity>().AsNoTracking().Include(include).Where(predicate);
             if (orderBy != null)
-                findResult = findResult.OrderBy(orderBy);
+            {
+                if (!descending)
+                {
+                    findResult = findResult.OrderBy(orderBy);
+                }
+                else
+                {
+                    findResult = findResult.OrderByDescending(orderBy);
+                }
+            }
             if (take.HasValue)
                 findResult = findResult.Take(take.Value);
             if (skip.HasValue)
@@ -86,7 +96,7 @@ namespace ReadMLB.DataLayer.Repositories
             return await findResult.ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync<TKey>(IEnumerable<string> includes, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, int? take = 50, int? skip = 0)
+        public async Task<IEnumerable<TEntity>> FindAsync<TKey>(IEnumerable<string> includes, Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TKey>> orderBy = null, bool descending = false, int? take = 50, int? skip = 0)
         {
             var findResult = Context.Set<TEntity>().AsNoTracking();
             if (includes.Any())
@@ -100,7 +110,12 @@ namespace ReadMLB.DataLayer.Repositories
             
             findResult = findResult.Where(predicate);
             if (orderBy != null)
-                findResult = findResult.OrderBy(orderBy);
+            {
+                if (!descending)
+                    findResult = findResult.OrderBy(orderBy);
+                else
+                    findResult = findResult.OrderByDescending(orderBy);
+            }
             if (take.HasValue)
                 findResult = findResult.Take(take.Value);
             if (skip.HasValue)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReadMLB.Services;
 using ReadMLB.Web.API.Model;
@@ -28,6 +25,12 @@ namespace ReadMLB.Web.API.Controllers
         {
             var stats = await _pitchingService.GetPlayerPitchingStatsAsync(playerId, inPO);
             return Ok(_mapper.Map<IEnumerable<PitchingStatModel>>(stats));
+        }
+        [HttpGet("league/{league:int}/{year:int}")]
+        public async Task<IActionResult> GetLeagueBattingStatsAsync([FromRoute] byte league, [FromRoute] short year, [FromQuery]bool inPO = false, [FromQuery]byte? teamId = null, [FromQuery]int take = 500)
+        {
+            var result = await _pitchingService.GetLeaguePitchingStatsLeadersAsync(league, year, inPO, teamId, take);
+            return Ok(_mapper.Map<IEnumerable<PitchingAndPlayerStatModel>>(result));
         }
     }
 }

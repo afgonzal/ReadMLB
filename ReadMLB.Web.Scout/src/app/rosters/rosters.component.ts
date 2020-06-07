@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class RostersComponent implements OnInit {
   constructor() {}
- 
+
   ngOnInit(): void {
 
   }

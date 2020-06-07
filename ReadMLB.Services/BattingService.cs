@@ -22,7 +22,7 @@ namespace ReadMLB.Services
         Task<IEnumerable<Batting>> GetPlayerBattingStatsAsync(long playerId, short year, byte? league = null);
         Task<List<Batting>> GetPlayerBattingStatsAsync(long playerId, bool inPO);
         Task BatchInsertBattingStatAsync(ICollection<Batting> battingStats);
-        Task<IEnumerable<Batting>> GetLeagueBattingStatsLeadersAsync(byte league, short year, bool inPO, int take, BattingVs battingVs);
+        Task<IEnumerable<Batting>> GetLeagueBattingStatsLeadersAsync(byte league, short year, bool inPO, int take, BattingVs battingVs, byte? teamId);
     }
     public class BattingService : IBattingService
     {
@@ -46,10 +46,12 @@ namespace ReadMLB.Services
         }
 
         public Task<IEnumerable<Batting>> GetLeagueBattingStatsLeadersAsync(byte league, short year, bool inPO,
-            int take, BattingVs battingVs)
+            int take, BattingVs battingVs, byte? teamId)
         {
-            var batters = _unitOfWork.BattingStats.FindAsync(new List<string> {"Team", "Player"}, b => b.League == league && b.Year == year && b.InPO == inPO && b.BattingVs == battingVs, b => b.AB, take, 0);
-            return batters;
+            if (!teamId.HasValue)
+                return _unitOfWork.BattingStats.FindAsync(new List<string> {"Team", "Player"}, b => b.League == league && b.Year == year && b.InPO == inPO && b.BattingVs == battingVs, b => b.AB, true, take, 0);
+            return _unitOfWork.BattingStats.FindAsync(new List<string> { "Team", "Player" }, b => b.League == league && b.Year == year && b.InPO == inPO && b.BattingVs == battingVs && 
+                                                                                                  (b.TeamId == teamId.Value || b.Team.OrganizationId == teamId.Value), b => b.AB, true, take, 0);
         }
 
         public async Task<ICollection<Batting>> GetOrganizationBattersAsync(short year, byte organizationId)
