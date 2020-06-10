@@ -10,6 +10,7 @@ namespace ReadMLB.Services
         Task<long> AddDefenseStatsAsync(Defense newDefenseStat);
         Task CleanYearAsync(short year, bool inPO);
         Task<List<Defense>> GetPlayerDefenseStatsAsync(long playerId, bool inPo);
+        Task BatchInsertDefenseStatAsync(IList<Defense> currentBatch);
     }
     public class DefenseStatsService : IDefenseStatsService
     {
@@ -35,6 +36,12 @@ namespace ReadMLB.Services
         {
             return _unitOfWork.DefenseStats.FindAsync(d => d.Team.Organization,
                 d => d.PlayerId == playerId && d.InPO == inPo);
+        }
+
+        public async Task BatchInsertDefenseStatAsync(IList<Defense> defenseStats)
+        {
+            await _unitOfWork.DefenseStats.AddRangeAsync(defenseStats);
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

@@ -98,31 +98,42 @@ namespace ReadMLB2020
                         continue;
                     }
 
-                    var match = new MatchResult
+                    try
+                    {
+
+
+                        var match = new MatchResult
                         {
                             DateTime = DateTime.ParseExact(attrs[1].ExtractName(), "MM/dd/yyyy hh:mm tt", null),
                             HomeScore = Convert.ToByte(attrs[3]),
                             AwayScore = Convert.ToByte(attrs[5]),
                             Year = _year,
-                            InPO =  _inPO,
+                            InPO = _inPO,
                             Round = "R",
                             League = league
                         };
-                    //check if it's all star game
-                    if (attrs[2].ExtractName() == "American")
-                    {
-                        match.HomeTeamId = 0;
-                        match.AwayTeamId = 8;
-                    } else if (attrs[2].ExtractName() == "National")
-                    {
-                        match.HomeTeamId = 8;
-                        match.AwayTeamId = 0;
+                        //check if it's all star game
+                        if (attrs[2].ExtractName() == "American")
+                        {
+                            match.HomeTeamId = 0;
+                            match.AwayTeamId = 8;
+                        }
+                        else if (attrs[2].ExtractName() == "National")
+                        {
+                            match.HomeTeamId = 8;
+                            match.AwayTeamId = 0;
+                        }
+                        else //not the All star
+                        {
+                            match = resolver.SolveTeams(attrs[2].ExtractName(), attrs[4].ExtractName(), match);
+                        }
+
+                        _fullSchedule.Add(match);
                     }
-                    else //not the All star
+                    catch (Exception ex)
                     {
-                        match = resolver.SolveTeams(attrs[2].ExtractName(), attrs[4].ExtractName(), match);
+                        var j = ex;
                     }
-                    _fullSchedule.Add(match);
                 }
             }
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using ReadMLB.Entities;
@@ -49,12 +51,41 @@ namespace ReadMLB2020
                         ASST = Convert.ToInt16(attrs[8]),
                         ERR = Convert.ToInt16(attrs[9])
                     };
-
-                    await _defenseService.AddDefenseStatsAsync(defenseStat);
+                    await InsertToDbAsync(defenseStat);
+                    //await _defenseService.AddDefenseStatsAsync(defenseStat);
                 }
                 file.Close();
             }
             Console.WriteLine("Defense read completed");
         }
+
+        #region Batch Insert
+        private readonly IList<Defense> _currentBatch = new List<Defense>();
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private async Task InsertToDbAsync(Defense dstat)
+        {
+            await _semaphore.WaitAsync();
+            _currentBatch.Add(dstat);
+            if (_currentBatch.Count() >= 200)
+            {
+
+                await _defenseService.BatchInsertDefenseStatAsync(_currentBatch);
+                Console.Write(".");
+                _currentBatch.Clear();
+            }
+            _semaphore.Release();
+        }
+
+        private async Task FinishLastInsertBatch()
+        {
+            if (_currentBatch.Any())
+            {
+                await _defenseService.BatchInsertDefenseStatAsync(_currentBatch);
+                _currentBatch.Clear();
+            }
+        }
+
+
+        #endregion
     }
 }
